@@ -4,9 +4,16 @@ class Dashboard extends Component {
   render() {
     return (
       <div className="row">
-        <div className="col-md-6 offset-md-2">
-          <h1>count: {this.formatCode()}</h1>
-          <button onClick={this.handleClick}>Increment</button>
+        <div className="col-md-3 left-panel " >
+          {/* <h1>count: {this.formatCode()}</h1>
+          <button onClick={this.handleClick}>Increment</button> */}
+        tables
+        </div>
+        <div className="col-md-6 middle-panel" style={{borderRight: 2+" px solid black"}}>
+
+        </div>
+        <div className="col-md-3 right-panel">
+
         </div>
       </div>
     );

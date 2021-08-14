@@ -1,3 +1,19 @@
+img {
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.btn-mapper {
+  background-color: #11a53f9e;
+  border-color: #11a53f9e;
+  color: white;
+}
+
+.btn-explore {
+  background-color: white;
+  border-color: #11a53f9e;
+}
+
 /* @import "../assets/fonts.css";
 
 .font-body {
@@ -54,17 +70,3 @@ img {
   max-height: 100%;
   max-width: 100%;
 } */
-img {
-  max-height: 100%;
-  max-width: 100%;
-}
-
-.btn-mapper {
-  background-color: #11a53fa8;
-  border-color: #11a53ff5;
-}
-
-.btn-explore {
-  background-color: #11a53f00;
-  border-color: #11a53ff5;
-}
