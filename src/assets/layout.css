@@ -7,15 +7,16 @@
 
 .header {
   height: 6vh;
-  background: #11a53f1c;
+  background: #133524;
   z-index: 1002;
   top: 0;
   color: black;
 }
+
 .header hr {
   background-color: white;
-  border: 6px solid white;
-  margin: -2px;
+  border: 1px solid white;
+  margin: 0px;
   padding: 0px;
 }
 
@@ -23,8 +24,14 @@
   height: 3vh;
 }
 
+.logo {
+  color: #0e9539;
+  margin-top: -3vh;
+  font-weight: bold;
+}
+
 .logo-color {
-  color: #11a53ff5;
+  color: #0e9539; /*0e9539*/
 }
 
 .font-body {
@@ -50,7 +57,13 @@
 
 .left-panel {
   height: 94vh;
-  background: #11a53f5c;
+  /* background: #d6e0db; */
+  /*54826bb3;*/
+  color: black;
+  padding: 0px;
+  /* padding-top: 1em; */
+
+  /* 11a53f5c; */
 }
 .right-panel {
   height: 94vh;
@@ -60,6 +73,13 @@
   height: 94vh;
   border-left: 1px solid #11a53f5c;
   border-right: 1px solid #11a53f5c;
+}
+
+.table-space {
+  padding-left: 1em;
+}
+.margin-right-neg-15 {
+  margin-right: -15px !important;
 }
 
 /* a.logo span {

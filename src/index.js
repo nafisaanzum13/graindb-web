@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import "bootstrap/dist/css/bootstrap.css";
+
 import "./assets/layout.css";
 import "./assets/custom.css";
 import App from "./layouts/App";

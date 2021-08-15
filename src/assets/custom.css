@@ -1,3 +1,5 @@
+/* @import "../assets/font-awesome.css"; */
+
 img {
   max-height: 100%;
   max-width: 100%;
@@ -12,6 +14,40 @@ img {
 .btn-explore {
   background-color: white;
   border-color: #11a53f9e;
+}
+
+.zero-padding {
+  padding: 0px;
+}
+.zero-margin {
+  margin: 0px;
+}
+.white-background {
+  background-color: white;
+}
+.solid-margin-1em {
+  margin: 1em solid;
+}
+
+.theme-green-background {
+  background-color: #0e9539;
+}
+
+.theme-green-background-light {
+  background: #d6e0db;
+}
+.list-items {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+
+.selectable-table-div:hover {
+  background-color: #11a53f5c;
+  cursor: pointer;
+}
+
+[draggable="true"] {
+  cursor: move;
 }
 
 /* @import "../assets/fonts.css";

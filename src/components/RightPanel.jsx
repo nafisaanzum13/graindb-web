@@ -1,9 +1,6 @@
 import React, { Component } from "react";
-class MappingPanel extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-      }
+class RightPanel extends Component {
+  state = {};
   render() {
     return (
       <>
@@ -14,4 +11,4 @@ class MappingPanel extends Component {
   }
 }
 
-export default MappingPanel;
+export default RightPanel;

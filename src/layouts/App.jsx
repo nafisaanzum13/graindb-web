@@ -3,14 +3,11 @@ import Dashboard from "../components/Dashboard";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
-import {Container} from 'react-bootstrap';
-
-import { Route, Switch } from "react-router-dom";
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.mainPanel = React.createRef();
+    // this.mainPanel = React.createRef();
   }
   render() {
     return (
