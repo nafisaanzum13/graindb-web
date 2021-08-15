@@ -15,10 +15,10 @@ class Dashboard extends Component {
   render() {
     return (
       <div className="row">
-        <div className="col-md-2 left-panel " >
+        <div className="col-md-3 left-panel " >
           <LeftPanel {...this.props}  />
         </div>
-        <div className="col-md-12 middle-panel " style={{borderRight: 2+" px solid black"}}>
+        <div className="col-md-9 middle-panel " style={{borderRight: 2+" px solid black"}}>
         <MappingPanel {...this.props}  />
         </div>
         {/* <div className="col-md-2 right-panel">

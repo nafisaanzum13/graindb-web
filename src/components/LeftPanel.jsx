@@ -15,7 +15,7 @@ class LeftPanel extends Component {
     return (
       <>
       <div className="theme-green-background-light">
-            <h5 className = "table-space logo-color" style={{paddingTop:0.5+'em'}}>Relational Tables</h5>
+            <h5 className = "table-space-headers">Relational Tables</h5>
             {/* <SearchBox defaultRefinement="iphone"  /> */}
             <div style={{height: 45+"vh", overflowY:"auto", overflowX:"hidden"}}>
                 <div className = "table-space">
@@ -28,7 +28,7 @@ class LeftPanel extends Component {
       </div>
       <div style={{height: 0.5+"vh", background:"white"}}></div>
       <div  className="theme-green-background-light">
-            <h5 className = "table-space logo-color" style={{paddingTop:0.5+'em'}}>Mapped Graph</h5>
+            <h5 className = "table-space-headers">Mapped Graph</h5>
             
             <div style={{height: 40+"vh", overflowY:"auto", overflowX:"hidden"}}>
 

@@ -25,7 +25,7 @@
 }
 
 .logo {
-  color: #0e9539;
+  color: #128e3a;
   margin-top: -3vh;
   font-weight: bold;
 }
@@ -78,6 +78,13 @@
 .table-space {
   padding-left: 1em;
 }
+
+.table-space-headers {
+  padding-left: 1.5em;
+  padding-top: 0.5em;
+  color: #128e3a;
+}
+
 .margin-right-neg-15 {
   margin-right: -15px !important;
 }
