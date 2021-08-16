@@ -1,16 +1,40 @@
 import React, { Component } from "react";
+import DrawingPanel from "./mapping/DrawingPanel";
+
+import Actions from "./actions/Actions";
+
 class MappingPanel extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = { actions: []};
       }
+
+    onChangeGraph = (action, graph) =>{
+      let actionId = this.state.actions.length + 1;
+      action['id'] = actionId;
+      this.setState(prevState => ({
+        actions: [action, ...prevState.actions],
+        graph:graph
+      }));
+    }
   render() {
+    console.log(this.state)
     return (
       <>
        <h4 className="logo-color top-padding-half"> Map your relational tables into nodes and edges</h4>
-       <div className="row">
-          <div className="col-md-8 mapping-drop-panel">
-
+       <div className="">
+          <small> Nodes (<span className="circle"/>): Drag and drop tables into the drawing panel to define nodes.</small><br/>
+          <small>Edges (<span className="circle "/> <span className="arrow-right"/> <span class="circle"/>):
+       Draw edges between the nodes on the drawing panel to define edges.</small>
+       </div>
+       <hr className="zero-margin"></hr>
+       
+       <div className="row top-padding-half">
+          <div className="col-md-8">
+              <DrawingPanel tables = {this.props.tables} onChangeGraph={this.onChangeGraph}/>
+          </div>
+          <div className="col-md-4 zero-padding">
+            <Actions actions={this.state.actions} />
           </div>
        </div>
       </>

@@ -8,6 +8,8 @@ class LeftPanel extends Component {
         this.state = {};
     }
 
+    
+
   render() {
     return (
       <>
@@ -17,7 +19,7 @@ class LeftPanel extends Component {
             <div style={{height: 45+"vh", overflowY:"overlay", overflowX:"hidden"}}>
                 <div className = "table-space">
                     <hr className="zero-margin solid-margin-1em white-backgrou "/>
-                    <RelationalTables />
+                    <RelationalTables tables={this.props.tables}/>
                 </div>
                 
             </div>

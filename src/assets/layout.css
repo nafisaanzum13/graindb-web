@@ -85,16 +85,6 @@
   padding-top: 0.5em;
   color: #128e3a;
 }
-
-.margin-right-neg-15 {
-  margin-right: -15px !important;
-}
-
-.mapping-drop-panel {
-  height: 50vh;
-  border: 1px solid #11a53f5c;
-}
-
 .logo-green-strokeme {
   color: white;
   /* text-shadow: -1px -1px 0 #128e3a, 1px -1px 0 #128e3a, -1px 1px 0 #128e3a,1px 1px 0 #128e3a; */
@@ -105,127 +95,10 @@
   text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff,
     1px 1px 0 #fff;
 }
-/* a.logo span {
-  color: #1ea896;
-  border: 283d3b;
-} */
 
-/* a.logo {
-  font-family: Ruda, sans-serif;
-  font-size: 3vh;
-  color: #ff715b;
-  float: left;
-  margin-bottom: 0vh;
+.mapping-drop-panel {
+  height: 75vh;
+  border: 1px solid #11a53f5c;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
-
-a.logo b {
-  font-weight: 900;
-} */
-
-/* a.logo:hover,
-a.logo:focus {
-  text-decoration: none;
-  outline: none;
-}
-
-.landing-page {
-  background: #ffffff;
-  /* height: 92vh;} */
-
-/* .top-content {
-  height: 40vh;
-  margin-left: 15px;
-}
-
-.top-content-large {
-  height: 90vh;
-  margin-left: 15px;
-} */
-
-/* .bottom-content {
-  height: 50vh;
-  width: 100%;
-  border: 0px;
-}
-
-.bottom-content-hidden {
-  height: 0vh;
-}
-
-.page-panel {
-  margin-left: -1em;
-  margin-right: -1em;
-}
-
-.iframe-cls {
-  height: 100%;
-  width: 100%;
-  border: 0px;
-  overflow: hidden;
-  padding-left: 3em;
-  padding-right: 3em;
-}
-
-.wiki-page {
-  height: 50vh;
-  width: 100%;
-  border: 0px;
-}
-
-.wiki-page-hidden {
-  height: 0vh;
-  visibility: hidden;
-}
-
-.toggle-button {
-  background-color: #ff715b;
-  color: white;
-  position: fixed;
-  right: 1em;
-  border: 0px;
-}
-
-.toggle-button:hover {
-  background-color: #1ea896;
-}
-
-.table-panel {
-  height: inherit;
-  overflow: auto;
-}
-
-.action-scrollable {
-  overflow-y: auto;
-  overflow-x: auto;
-  height: 85%;
-  width: 100%;
-}
-
-.action-panel {
-  height: inherit;
-  border-left: 1px solid lightgrey;
-}
-
-.wrangling-actions {
-  height: 30vh;
-}
-
-.table-list {
-  height: 25vh;
-}
-
-.height-inherit {
-  height: 100%;
-}
-
-.height-100 {
-  height: 100%;
-}
-
-.react-tabs {
-  height: 100%;
-}
-
-.padding-top-5vh {
-  padding-top: 7vh;
-} */

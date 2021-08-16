@@ -4,21 +4,21 @@ import TableContainer from "./TableContainer";
 class RelationalTables extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
-    this.state.tables = [];
-    this.state.tables = populateTable();
-    console.log(this.tables );
+    this.state =  {};
+    console.log(this.state);
     this.state.searchText = "";
     this.editSearchTerm = this.editSearchTerm.bind(this);
     this.dynamicSearchFilter = this.dynamicSearchFilter.bind(this);
+    
   }
 
   editSearchTerm(e) {
       this.setState({searchText : e.target.value});
   }
 
-  dynamicSearchFilter() {
-      return this.state.tables.filter(table => 
+  dynamicSearchFilter(tableList) {
+
+      return tableList.filter(table => 
         table.name.toLowerCase().includes(this.state.searchText.toLowerCase())
         )
   }
@@ -26,7 +26,7 @@ class RelationalTables extends Component {
   
   
 render() {
-    let filteredTables = this.dynamicSearchFilter();
+    let filteredTables = this.dynamicSearchFilter(this.props.tables);
     const tableList = filteredTables.map((singleTable) => <TableContainer table={singleTable} />);
     return (
       <>

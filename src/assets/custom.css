@@ -6,14 +6,14 @@ img {
 }
 
 .btn-mapper {
-  background-color: #11a53f9e;
+  background-color: white;
   border-color: #11a53f9e;
-  color: white;
 }
 
 .btn-explore {
-  background-color: white;
+  background-color: #11a53f9e;
   border-color: #11a53f9e;
+  color: white;
 }
 
 .zero-padding {
@@ -25,6 +25,15 @@ img {
 .top-padding-half {
   padding-top: 0.5em;
 }
+
+.left-padding-half {
+  padding-left: 0.5em;
+}
+
+.right-padding-half {
+  padding-left: 0.5em;
+}
+
 .white-background {
   background-color: white;
 }
@@ -58,59 +67,68 @@ img {
     1px 1px 0 #128e3a;
 }
 
-/* @import "../assets/fonts.css";
-
-.font-body {
-  font-family: "Palatino", cursive;
+.margin-right-neg-15 {
+  margin-right: -15px !important;
 }
 
-.header-body h1 {
-  font-size: 1.6rem;
-  padding: 0rem;
-  margin: 0rem;
-}
-.header-body {
+.circle {
+  background-color: #128e3a;
+  border: 0.5em solid #128e3a;
+  border-radius: 50%;
   display: inline-block;
-  font-size: 8vh;
-  max-height: 100%;
-  padding-top: 2vh;
-  padding-left: 1rem;
-  padding-right: 1rem;
   vertical-align: middle;
-  font-weight: 200;
 }
 
-.header-body p {
-  font-size: 1.4rem;
+.arrow-right:after {
+  content: "";
+  display: inline-block !important;
+  width: 0;
+  height: 0;
+  border-left: 0.25em solid #128e3a;
+  border-top: 0.25em solid transparent;
+  border-bottom: 0.25em solid transparent;
+  vertical-align: middle;
 }
 
-.header hr {
-  margin: 0rem;
-  padding: 0rem;
-}
-
-.footer {
-  height: 3vh;
-  background-color: #20232a;
-  color: #fff;
-}
-
-.main-content {
-  height: 90vh;
-}
-
-.header {
-  height: 7vh;
+.arrow-right:before {
+  width: 20px;
+  height: 2px;
+  background: #128e3a;
+  content: "";
   display: inline-block;
-  background-color: #20232a;
-  color: #fff;
+  vertical-align: middle;
 }
 
-img {
-  max-height: 100%;
-  max-width: 100%;
+.tooltip-on-icon {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted #128e3ab3;
+  cursor: pointer;
 }
-.row {
-  max-height: 100%;
-  max-width: 100%;
-} */
+
+.tooltiptext {
+  visibility: hidden;
+  height: 2em;
+  width: max-content;
+  background-color: #128e3ab3;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 0.3em;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip-on-icon:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.hidden {
+  display: none;
+}
