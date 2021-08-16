@@ -10,7 +10,16 @@ class Header extends Component {
           <div className="col-md-2 logo">
             {/* <img src={graphDbLogo}></img> */}
             <span style={{fontSize: 44+"px", verticalAlign:"bottom"}}>
-              g</span>ra<span style={{ color:"white"}}>inDB</span>
+              g</span>
+              <span>
+
+              <span style={{fontSize: 36+"px"}}>
+              R</span>
+              <span className = "logo-green-strokeme ">ainDB</span>
+              </span>
+              
+              
+              
           </div>
           <div className="col-md-2 offset-md-6" style={{paddingRight : 0+'rem'}}>
             <button type="button"

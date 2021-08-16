@@ -22,6 +22,9 @@ img {
 .zero-margin {
   margin: 0px;
 }
+.top-padding-half {
+  padding-top: 0.5em;
+}
 .white-background {
   background-color: white;
 }
@@ -48,6 +51,11 @@ img {
 
 [draggable="true"] {
   cursor: move;
+}
+
+.strokeme {
+  text-shadow: -1px -1px 0 #128e3a, 1px -1px 0 #128e3a, -1px 1px 0 #128e3a,
+    1px 1px 0 #128e3a;
 }
 
 /* @import "../assets/fonts.css";

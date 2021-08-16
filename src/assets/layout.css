@@ -8,6 +8,7 @@
 .header {
   height: 6vh;
   background: #133524;
+
   z-index: 1002;
   top: 0;
   color: black;
@@ -89,6 +90,21 @@
   margin-right: -15px !important;
 }
 
+.mapping-drop-panel {
+  height: 50vh;
+  border: 1px solid #11a53f5c;
+}
+
+.logo-green-strokeme {
+  color: white;
+  /* text-shadow: -1px -1px 0 #128e3a, 1px -1px 0 #128e3a, -1px 1px 0 #128e3a,1px 1px 0 #128e3a; */
+}
+
+.logo-white-strokeme {
+  color: #128e3a;
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff,
+    1px 1px 0 #fff;
+}
 /* a.logo span {
   color: #1ea896;
   border: 283d3b;

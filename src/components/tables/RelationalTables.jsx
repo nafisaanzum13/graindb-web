@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+
+import TableContainer from "./TableContainer";
 class RelationalTables extends Component {
   constructor(props) {
     super(props);
@@ -25,35 +27,16 @@ class RelationalTables extends Component {
   
 render() {
     let filteredTables = this.dynamicSearchFilter();
-    const tableList = filteredTables.map((singleTable) =>
-    <div className="row">
-         <div className="col-md-10 offset-md-1">
-            <div className="list-items row">
-                <div className="col-md-10 selectable-table-div" draggable="true">
-                {singleTable.name}<i class="fa fa-hand-rock-o"></i>
-                </div>
-                <div className="col-md-1 text-right"><i class="fa fa-bars"></i></div>
-            </div>
-            
-            <hr className="zero-margin"/>
-        </div>
-
-    </div>
-   
-    );
+    const tableList = filteredTables.map((singleTable) => <TableContainer table={singleTable} />);
     return (
       <>
-      <div className="row" style={{paddingLeft:0.7+"em", paddingRight:0.7+"em", paddingTop:0.3+"em", paddingBottom:0.2+"em"}} >
-        <div className = "col-md-12">
-            <input type='text' className="form-control form-control-sm" value = {this.state.searchText} onChange = {this.editSearchTerm} 
-            placeholder = "Search Table" />
+        <div className="row" style={{paddingLeft:0.7+"em", paddingRight:0.7+"em", paddingTop:0.3+"em", paddingBottom:0.2+"em"}} >
+            <div className = "col-md-12">
+                <input type='text' className="form-control form-control-sm" value = {this.state.searchText} onChange = {this.editSearchTerm} 
+                placeholder = "Search Table" />
+            </div>
         </div>
-      </div>
-      
-      <div>
-        {tableList} 
-      </div>
-          
+        {tableList}   
       </>
     );
   }

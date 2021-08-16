@@ -1,9 +1,6 @@
 import React, { Component } from "react";
 
-import RelationalTables from "./RelationalTables";
-import { SearchBox } from 'react-instantsearch-dom';
-
-
+import RelationalTables from "./tables/RelationalTables";
 
 class LeftPanel extends Component {
     constructor(props) {
@@ -17,7 +14,7 @@ class LeftPanel extends Component {
       <div className="theme-green-background-light">
             <h5 className = "table-space-headers">Relational Tables</h5>
             {/* <SearchBox defaultRefinement="iphone"  /> */}
-            <div style={{height: 45+"vh", overflowY:"auto", overflowX:"hidden"}}>
+            <div style={{height: 45+"vh", overflowY:"overlay", overflowX:"hidden"}}>
                 <div className = "table-space">
                     <hr className="zero-margin solid-margin-1em white-backgrou "/>
                     <RelationalTables />
@@ -29,7 +26,6 @@ class LeftPanel extends Component {
       <div style={{height: 0.5+"vh", background:"white"}}></div>
       <div  className="theme-green-background-light">
             <h5 className = "table-space-headers">Mapped Graph</h5>
-            
             <div style={{height: 40+"vh", overflowY:"auto", overflowX:"hidden"}}>
 
                 <div className = "table-space">

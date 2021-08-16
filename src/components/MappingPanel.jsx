@@ -7,8 +7,12 @@ class MappingPanel extends Component {
   render() {
     return (
       <>
-        {/* <hr className="m-0"></hr>
-        <div className="text-center">2020</div> */}
+       <h4 className="logo-color top-padding-half"> Map your relational tables into nodes and edges</h4>
+       <div className="row">
+          <div className="col-md-8 mapping-drop-panel">
+
+          </div>
+       </div>
       </>
     );
   }
