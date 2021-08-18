@@ -12,7 +12,10 @@ class Dashboard extends Component {
       error: null,
       isLoaded: false,
       tables: [],
-      graph: {}
+      graph: {
+        nodes:[],
+        links:[]
+      }
     };
   }
 
@@ -35,10 +38,10 @@ class Dashboard extends Component {
     return (
       <div className="row">
         <div className="col-md-3 left-panel " >
-          <LeftPanel tables={this.state.tables} />
+          <LeftPanel tables={this.state.tables} graph={this.state.graph}/>
         </div>
         <div className="col-md-9 middle-panel " style={{borderRight: 2+" px solid black"}}>
-        <MappingPanel tables={this.state.tables} graph={this.state.graph} />
+        <MappingPanel tables={this.state.tables} graph={this.state.graph} onChangeGraph={this.onChangeGraph}/>
         </div>
         {/* <div className="col-md-2 right-panel">
           <RightPanel {...this.props}  />

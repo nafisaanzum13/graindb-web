@@ -13,12 +13,11 @@ class MappingPanel extends Component {
       let actionId = this.state.actions.length + 1;
       action['id'] = actionId;
       this.setState(prevState => ({
-        actions: [action, ...prevState.actions],
-        graph:graph
+        actions: [action, ...prevState.actions]
       }));
+      this.props.onChangeGraph(graph);
     }
   render() {
-    console.log(this.state)
     return (
       <>
        <h4 className="logo-color top-padding-half"> Map your relational tables into nodes and edges</h4>

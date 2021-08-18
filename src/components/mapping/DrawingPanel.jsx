@@ -53,7 +53,8 @@ class DrawingPanel extends Component {
   addEdge = (source, target) => {
     console.log("Souce", source);
     console.log("target", target);
-    let newLink ={ source: source, target: target, left : false, right : true };
+    let id = this.state.links.length;
+    let newLink ={ id: id, source: source, target: target, left : false, right : true };
     this.setState(prevState => ({
       links: [...prevState.links, newLink]
     }));
@@ -62,7 +63,7 @@ class DrawingPanel extends Component {
       link : newLink,
       description : newLink.source.name +"-"+ newLink.target.name +" edge type created."
     }
-    this.props.onChangeGraph(action, {nodes: this.state.nodes, edges: this.state.edges})
+    this.props.onChangeGraph(action, {nodes: this.state.nodes, links: this.state.links})
   }
 
   onDrop = (ev) => {
@@ -80,7 +81,7 @@ class DrawingPanel extends Component {
       node : newNode,
       description : newNode.name+" node type created."
     }
-    this.props.onChangeGraph(action, {nodes: this.state.nodes, edges: this.state.edges})
+    this.props.onChangeGraph(action, {nodes: this.state.nodes, links: this.state.links})
   }
 }
 

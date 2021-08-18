@@ -2,13 +2,15 @@ import React, { Component } from "react";
 
 import RelationalTables from "./tables/RelationalTables";
 
+import MappedGraphPanel from "./mapped-graph/MappedGraphPanel";
+
 class LeftPanel extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+        };
     }
 
-    
 
   render() {
     return (
@@ -31,9 +33,8 @@ class LeftPanel extends Component {
             <div style={{height: 40+"vh", overflowY:"auto", overflowX:"hidden"}}>
 
                 <div className = "table-space">
-                <hr className="zero-margin solid-margin-1em white-backgrou "/>
-                   <p> No graph mapped yet!</p>
-                    {/* <RelationalTables /> */}
+                    <hr className="zero-margin solid-margin-1em "/>
+                    <MappedGraphPanel nodes = {this.props.graph.nodes} links={this.props.graph.links} />
                 </div>
                 
             </div>
