@@ -21,7 +21,7 @@ class Header extends Component {
               
               
           </div>
-          <div className="col-md-2 offset-md-6" style={{paddingRight : 0+'rem'}}>
+          {/* <div className="col-md-2 offset-md-6" style={{paddingRight : 0+'rem'}}>
             <button type="button"
                 className="btn btn-block btn-mapper"
 >             Define Graph in DB
@@ -32,10 +32,10 @@ class Header extends Component {
                 className="btn btn-block btn-explore"
 > Explore Graph with GRQL
             </button>
-          </div>
+          </div> */}
          
         </div>
-        <hr/>
+        {/* <hr/> */}
       </>
       </>
     );

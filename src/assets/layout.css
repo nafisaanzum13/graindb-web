@@ -6,9 +6,8 @@
 }
 
 .header {
-  height: 6vh;
+  height: 5vh;
   background: #133524;
-
   z-index: 1002;
   top: 0;
   color: black;
@@ -50,10 +49,11 @@
 }
 
 .mainbody {
-  height: 94vh;
+  height: 95vh;
+  margin-top: 0.25em;
   /* margin-top: 7vh; */
-  border-top: 1px solid #11a53f9e;
-  border-bottom: 1px solid #11a53ff5;
+  /* border-top: 1px solid #11a53f9e;
+  border-bottom: 1px solid #11a53ff5; */
 }
 
 .left-panel {

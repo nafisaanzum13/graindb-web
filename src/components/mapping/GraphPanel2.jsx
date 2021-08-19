@@ -148,9 +148,9 @@ import * as d3 from 'd3';
         //   .on('mousemove', (event, d) => this.mousemove(event, d))
           .on('mouseup', (event, d) => this.mouseup(event, d));
     
-        d3.select(window)
-          .on('keydown', (event, d) => this.keydown(event, d))
-          .on('keyup', (event, d) => this.keyup(event, d));
+        // d3.select(window)
+        //   .on('keydown', (event, d) => this.keydown(event, d))
+        //   .on('keyup', (event, d) => this.keyup(event, d));
     
         this.restart();
       }
@@ -349,73 +349,73 @@ import * as d3 from 'd3';
         }
       }
     
-      keydown(event, d) {
-        event.preventDefault();
+      // keydown(event, d) {
+      //   event.preventDefault();
     
-        if (this.lastKeyDown !== -1) return;
-        this.lastKeyDown = event.keyCode;
+      //   if (this.lastKeyDown !== -1) return;
+      //   this.lastKeyDown = event.keyCode;
     
-        // ctrl
-        if (event.keyCode === 17) {
-          this.circle.call(this.drag);
-          this.svg.classed('ctrl', event.currentTarget);
-          return;
-        }
+      //   // ctrl
+      //   if (event.keyCode === 17) {
+      //     this.circle.call(this.drag);
+      //     this.svg.classed('ctrl', event.currentTarget);
+      //     return;
+      //   }
     
-        if (!this.selectedNode && !this.selectedLink) return;
+      //   if (!this.selectedNode && !this.selectedLink) return;
     
-        switch (event.keyCode) {
-          case 8: // backspace
-          case 46: // delete
-            if (this.selectedNode) {
-              this.nodes.splice(this.nodes.indexOf(this.selectedNode), 1);
-              this.spliceLinksForNode(this.selectedNode);
-            } else if (this.selectedLink) {
-              this.links.splice(this.links.indexOf(this.selectedLink), 1);
-            }
-            this.selectedLink = null;
-            this.selectedNode = null;
-            this.restart();
-            break;
-          case 66: // B
-            if (this.selectedLink) {
-              // set link direction to both left and right
-              this.selectedLink.left = true;
-              this.selectedLink.right = true;
-            }
-            this.restart();
-            break;
-          case 76: // L
-            if (this.selectedLink) {
-              // set link direction to left only
-              this.selectedLink.left = true;
-              this.selectedLink.right = false;
-            }
-            this.restart();
-            break;
-          case 82: // R
-            if (this.selectedNode) {
-              // toggle node reflexivity
-              this.selectedNode.reflexive = !this.selectedNode.reflexive;
-            } else if (this.selectedLink) {
-              // set link direction to right only
-              this.selectedLink.left = false;
-              this.selectedLink.right = true;
-            }
-            this.restart();
-            break;
-        }
-      }
+      //   switch (event.keyCode) {
+      //     case 8: // backspace
+      //     case 46: // delete
+      //       if (this.selectedNode) {
+      //         this.nodes.splice(this.nodes.indexOf(this.selectedNode), 1);
+      //         this.spliceLinksForNode(this.selectedNode);
+      //       } else if (this.selectedLink) {
+      //         this.links.splice(this.links.indexOf(this.selectedLink), 1);
+      //       }
+      //       this.selectedLink = null;
+      //       this.selectedNode = null;
+      //       this.restart();
+      //       break;
+      //     case 66: // B
+      //       if (this.selectedLink) {
+      //         // set link direction to both left and right
+      //         this.selectedLink.left = true;
+      //         this.selectedLink.right = true;
+      //       }
+      //       this.restart();
+      //       break;
+      //     case 76: // L
+      //       if (this.selectedLink) {
+      //         // set link direction to left only
+      //         this.selectedLink.left = true;
+      //         this.selectedLink.right = false;
+      //       }
+      //       this.restart();
+      //       break;
+      //     case 82: // R
+      //       if (this.selectedNode) {
+      //         // toggle node reflexivity
+      //         this.selectedNode.reflexive = !this.selectedNode.reflexive;
+      //       } else if (this.selectedLink) {
+      //         // set link direction to right only
+      //         this.selectedLink.left = false;
+      //         this.selectedLink.right = true;
+      //       }
+      //       this.restart();
+      //       break;
+      //   }
+      // }
     
-      keyup(event, dy) {
-        this.lastKeyDown = -1;
+      // keyup(event, dy) {
+      //   this.lastKeyDown = -1;
     
-        // ctrl
-        if (event.keyCode === 17) {
-          this.circle.on('.drag', null);
-          this.svg.classed('ctrl', false);
-        }
-      }
+      //   // ctrl
+      //   if (event.keyCode === 17) {
+      //     this.circle.on('.drag', null);
+      //     this.svg.classed('ctrl', false);
+      //   }
+      // }
   }
   
   export default GraphPanel2;

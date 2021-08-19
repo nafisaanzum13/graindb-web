@@ -188,3 +188,23 @@ text {
 text.id {
   text-anchor: middle;
 }
+
+.query-input-area {
+  background-color: #c2e7ceb3;
+  padding: 0.25em;
+  margin-left: 0.05em;
+}
+
+.middle-position-vertical {
+  vertical-align: middle;
+}
+
+.padding-point1em {
+  padding: 0.1em;
+}
+
+.btn-clear {
+  background-color: white;
+  color: black;
+  border: 1px solid #128e3ab3;
+}

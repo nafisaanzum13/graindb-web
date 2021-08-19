@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 
 import LeftPanel from "./LeftPanel";
-import RightPanel from "./RightPanel";
 import MappingPanel from "./MappingPanel";
+import GrqlMain from "./query-duckdb/GrqlMain";
 import ls from 'local-storage';
+
+import { Tabs, Tab } from "react-bootstrap";
 class Dashboard extends Component {
 
   constructor(props) {
@@ -41,7 +43,21 @@ class Dashboard extends Component {
           <LeftPanel tables={this.state.tables} graph={this.state.graph}/>
         </div>
         <div className="col-md-9 middle-panel " style={{borderRight: 2+" px solid black"}}>
-        <MappingPanel tables={this.state.tables} graph={this.state.graph} onChangeGraph={this.onChangeGraph}/>
+        <Tabs
+              defaultActiveKey="home"
+              transition={false}
+              id="noanim-tab-example"
+              className="mb-3"
+            >
+              <Tab eventKey="home" title="Relational to Graph Mapping">
+                <MappingPanel tables={this.state.tables} graph={this.state.graph} onChangeGraph={this.onChangeGraph}/>
+              </Tab>
+              <Tab eventKey="grql" title="Query DuckDB using GRQL">
+                <GrqlMain tables={this.state.tables} graph={this.state.graph}  />
+              </Tab>
+              
+            </Tabs>
+       
         </div>
         {/* <div className="col-md-2 right-panel">
           <RightPanel {...this.props}  />

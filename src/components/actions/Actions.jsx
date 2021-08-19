@@ -9,13 +9,14 @@ class Actions extends Component {
     return (
       <>
       <h5 className="logo-color">Actions  
+      
        <div className="tooltip-on-icon">
           <i className="fa fa-undo " style={{fontSize: '1em', color:'red', marginLeft:"0.3em"}}/> 
           <small class="tooltiptext">Undo the most recent action</small>
        </div>
         
          </h5> 
-      
+         <hr className="zero-margin"></hr>
       <div>
       {actionList}
       </div>

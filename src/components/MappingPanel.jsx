@@ -20,13 +20,13 @@ class MappingPanel extends Component {
   render() {
     return (
       <>
-       <h4 className="logo-color top-padding-half"> Map your relational tables into nodes and edges</h4>
+       <h5 className="logo-color"> Map your relational tables into nodes and edges</h5>
        <div className="">
           <small> Nodes (<span className="circle"/>): Drag and drop tables into the drawing panel to define nodes.</small><br/>
           <small>Edges (<span className="circle "/> <span className="arrow-right"/> <span class="circle"/>):
        Draw edges between the nodes on the drawing panel to define edges.</small>
        </div>
-       <hr className="zero-margin"></hr>
+       {/* <hr className="zero-margin"></hr> */}
        
        <div className="row top-padding-half">
           <div className="col-md-8">
