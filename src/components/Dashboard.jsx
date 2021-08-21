@@ -4,11 +4,14 @@ import LeftPanel from "./LeftPanel";
 import MappingPanel from "./MappingPanel";
 import GrqlMain from "./query-duckdb/GrqlMain";
 import ls from 'local-storage';
+import axios from "axios";
+
 
 import { Tabs, Tab } from "react-bootstrap";
 class Dashboard extends Component {
 
   constructor(props) {
+
     super(props);
     this.state = {
       error: null,
@@ -20,15 +23,64 @@ class Dashboard extends Component {
       }
     };
   }
-
+  baseURL = "http://localhost:8080/http://localhost:1294/"
   componentDidMount() {
-    let tableList = populateTable();
-    this.setState ({
-      isLoaded: true,
-      tables: tableList
-    });
+    
+    let headers = new Headers();
+
+    headers.append('Content-Type', 'application/json');
+    headers.append('Accept', 'application/json');
+
+    headers.append('Access-Control-Allow-Origin', '*');
+
+    headers.append('GET', 'POST', 'OPTIONS');
+    let queryURL = this.baseURL + "query?q=PRAGMA show_tables"
+
+    fetch(queryURL, {})
+      .then(res  => res.json())
+      .then(
+        (result) => {
+          console.log("result", result.data[0]);
+          let tables = this.getTableObjects(result.data[0]);
+          this.setState ({
+            isLoaded: true,
+            tables: tables
+          });
+        },
+        (error) => {
+          console.log("error", error);
+          this.setState({
+            isLoaded: false,
+            error
+          });
+        }
+      )
+    
 
     ls.set("tableList",this.state.tables);
+  }
+
+  getTableInfo = (index, tableName) => {
+    let queryURL = this.baseURL + "query?q=PRAGMA table_info('"+tableName+"');"
+    fetch(queryURL)
+    .then(res  => res.json())
+    .then(
+      (result) => {
+        console.log("result", result.data);
+        let tableList = this.state.tables;
+        tableList[index]['columns'] = result.data[1];
+        tableList[index]['dataTypes'] = result.data[2];
+        this.setState ({
+          isLoaded: true,
+          tables: tableList
+        });
+        console.log("result", this.state.tables);
+      },
+      (error) => {
+        console.log("error", error);
+      }
+    )
+
   }
 
   onChangeGraph = (graph) => {
@@ -73,7 +125,21 @@ class Dashboard extends Component {
     const { count } = this.state;
     return count === 0 ? "Zero" : count;
   }
+
+  getTableObjects(tableNameArray) {
+    const tables  = []
+    let index = 0;
+    tableNameArray.forEach(tableName => {
+      
+      tables.push({id: index, name: tableName, columns: [], pk:[], dataTypes:[]});
+      this.getTableInfo(index, tableName);
+      index++;
+    }); 
+    return tables;
+  }
+  
 }
+
 
 function populateTable() {
   const tables = [];
