@@ -21,6 +21,7 @@ radius = 25
   path;
   circle;
   linkLabels;
+  labels;
 
   // mouse event vars
   selectedNode= null;
@@ -32,7 +33,7 @@ radius = 25
   tick() {
     this.nodes = this.props.nodes;
     this.links = this.props.links;
-    console.log("Graph edges ", this.links);
+    // console.log("Graph edges ", this.links);
     this.circle.attr('transform', (d) => `translate(${d.x},${d.y})`);
     // draw directed edges with proper padding from node centers
     this.path.attr('d', (d) => {
@@ -90,19 +91,26 @@ radius = 25
     return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
   
     });
-    this.linkLabels.attr("x", function(d) {
-      const sourceDx = Math.max(this.radius, Math.min(this.width - this.radius, d.source.x));
 
-      const targetDx = Math.max(this.radius, Math.min(this.width - this.radius, d.target.x));
-      return ((sourceDx + targetDx) / 2);
-      // return ((d.source.x + d.target.x) / 2);
+    this.labels.attr("x", function(d) {
+        return ((d.source.x + d.target.x)/2);
     })
     .attr("y", function(d) {
-      const sourceDy = Math.max(this.radius, Math.min(this.height - this.radius, d.source.y));
-      const targetDy = Math.max(this.radius, Math.min(this.height - this.radius, d.target.y));
-      return ((sourceDy + targetDy) / 2);
-      // return ((d.source.y + d.target.y) / 2);
+        return ((d.source.y + d.target.y)/2);
     });
+    // this.linkLabels.attr("x", function(d) {
+    //   const sourceDx = Math.max(this.radius, Math.min(this.width - this.radius, d.source.x));
+
+    //   const targetDx = Math.max(this.radius, Math.min(this.width - this.radius, d.target.x));
+    //   return ((sourceDx + targetDx) / 2);
+    //   // return ((d.source.x + d.target.x) / 2);
+    // })
+    // .attr("y", function(d) {
+    //   const sourceDy = Math.max(this.radius, Math.min(this.height - this.radius, d.source.y));
+    //   const targetDy = Math.max(this.radius, Math.min(this.height - this.radius, d.target.y));
+    //   return ((sourceDy + targetDy) / 2);
+    //   // return ((d.source.y + d.target.y) / 2);
+    // });
 
    
   }
@@ -125,6 +133,7 @@ radius = 25
     }
     componentDidMount() {
         let size = 500;
+        
         this.svg = d3.select(this.svgRef.current)
           .append("svg")
           .attr("width", this.width)
@@ -171,7 +180,9 @@ radius = 25
             d.fx = null;
             d.fy = null;
           });
-    
+
+
+          
         // define arrow markers for graph links
         this.svg.append('svg:defs').append('svg:marker')
           .attr('id', 'end-arrow')
@@ -212,24 +223,7 @@ radius = 25
         // d3.select(window)
         //   .on('keydown', (event, d) => this.keydown(event, d))
         //   .on('keyup', (event, d) => this.keyup(event, d));
-    
-        this.linkLabels = this.svg.selectAll(".link_label")
-        .data(this.props.links)
-        .enter().append('svg:text')
-        .attr('class', 'link-label')
-        .attr('text-anchor', 'middle')
-        .text(function(d) {
-          return d.name;
-        });
-        
-        this.linkLabels.append("textPath")
-        .attr("xlink:href", function(d, i) {
-          return '#edge' + i;
-        })
-        .style("pointer-events", "none")
-        .text(function(d, i) {
-          return d.name
-        });
+        this.labels = this.svg.append('svg:g').selectAll('.link');
 
         this.restart();
       }
@@ -289,24 +283,41 @@ radius = 25
         // add new nodes
         const g = this.circle.enter().append('svg:g');
 
-        this.linkLabels = this.svg.selectAll(".link-label")
-        .data(this.props.links)
-        .text(function(d) {
-          console.log("d",d);
-          return d.name;
-        });
+        // this.linkLabels = this.svg.selectAll(".link-label")
+        // .data(this.links)
+        // .text(function(d) {
+        //   console.log("d",d);
+        //   return d.name;
+        // });
 
-        this.linkLabels.exit().remove();
+        // this.linkLabels.exit().remove();
 
-        this.linkLabels
-        .enter().append('svg:text')
-        .data(this.props.links)
-        .attr('class', 'link-label')
-        .attr('text-anchor', 'middle')
-        .text(function(d) {
-          console.log("d2",d);
-          return d.name;
-        }).merge(this.linkLabels);;
+        // this.linkLabels
+        // .enter().append('svg:text')
+        // .data(this.links)
+        // .attr('class', 'link-label')
+        // .attr('text-anchor', 'middle')
+        // .text(function(d) {
+        //   console.log("d2",d);
+        //   return d.name;
+        // }).merge(this.linkLabels);
+
+        this.labels = this.labels.data(this.links);
+
+        this.labels.exit().remove();
+        
+        this.labels.enter()
+            .append("text")
+            .data(this.links)
+            .attr("text-anchor", "middle")
+          .attr("fill", "Black")
+          .style("font", "normal 12px")
+          .attr("dy", ".35em")
+          .text(function(d) { return d.name; })
+            // .append("textPath")
+            // .attr("startOffset", "50%")
+            // .attr("xlink:href", function(d,i){ return "#id" + i})
+            // .text("label");
     
         g.append('svg:circle')
           .attr('class', 'node')
@@ -393,7 +404,7 @@ radius = 25
     
         this.circle = g.merge(this.circle);
         // this.linkLabels = g.merge(this.linkLabels);
-    
+        
         // set the graph in motion
         this.force
             .nodes(this.nodes)
