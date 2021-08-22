@@ -21,7 +21,7 @@ class NodeDetailsContainer extends Component {
     <div className="col-md-12">
         <div className="list-items row">
             <div className="col-md-10" >
-              {this.props.node.id}. {this.props.node.name}
+              {this.props.node.id + 1}. {this.props.node.name}
             </div>
             <div className="col-md-1 zero-padding">
               <button className="btn zero-padding" type="button" onClick={this.handleClick} >

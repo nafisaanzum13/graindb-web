@@ -83,8 +83,12 @@ class Dashboard extends Component {
 
   }
 
-  onChangeGraph = (graph) => {
-    this.setState({graph:graph})
+  onChangeGraph = (newNode, newLink) => {
+    if(newNode != null) this.state.graph.nodes.push(newNode);
+    if(newLink != null) this.state.graph.links.push(newLink);
+    this.setState(prevState => ({
+      graph: this.state.graph
+    }));
   }
 
   state = { count: 0 };
@@ -138,21 +142,6 @@ class Dashboard extends Component {
     return tables;
   }
   
-}
-
-
-function populateTable() {
-  const tables = [];
-  tables.push({id: 0, name: "Customer", columns: ['cid', 'name', 'address']});
-  tables.push({id: 1, name: "Product", columns: ['pid', 'description', 'price']});
-  tables.push({id: 2, name: "SingleOrderItems", columns: ['sid','pid', 'quantity']});
-  tables.push({id: 3, name: "Order", columns: ['oid', 'soid', "address"]});
-  tables.push({id: 4, name: "Merchant", columns: ['oid', 'sid', "address"]});
-  tables.push({id: 5, name: "Warehouse", columns: ['cid', 'name', 'address']});
-  tables.push({id: 6, name: "Locations", columns: ['pid', 'description', 'price']});
-  tables.push({id: 7, name: "Cities", columns: ['sid','pid', 'quantity']});
-  tables.push({id: 8, name: "OrderDetails", columns: ['oid', 'soid', "address"]});
-  return tables;
 }
 
 export default Dashboard;

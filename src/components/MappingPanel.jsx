@@ -9,13 +9,13 @@ class MappingPanel extends Component {
         this.state = { actions: []};
       }
 
-    onChangeGraph = (action, graph) =>{
+    onChangeGraph = (action, node, link) =>{
       let actionId = this.state.actions.length + 1;
       action['id'] = actionId;
       this.setState(prevState => ({
         actions: [action, ...prevState.actions]
       }));
-      this.props.onChangeGraph(graph);
+      this.props.onChangeGraph(node, link);
     }
   render() {
     return (
