@@ -4,8 +4,11 @@ class PastQueryContainer extends Component {
   render() {
     return (
       <>
-        {/* <hr className="m-0"></hr>
-        <div className="text-center">2020</div> */}
+        <div>
+          <small>{this.props.query.time}</small><br />
+          {this.props.query.query}
+          <hr className="zero-margin" />
+        </div>
       </>
     );
   }

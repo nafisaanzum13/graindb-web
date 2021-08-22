@@ -10,17 +10,35 @@ class GrqlMain extends Component {
         this.state = {
           pastQueries: [],
           searchQuery: null,
-          queryResult: {}
+          queryResult: {
+            data:[],
+            columns:[],
+            query:""
+          }
         };
     }
 
-    querySubmit = (searchQuery) => {
-        console.log("searchQuery", searchQuery)
-        // this.setState({
-        //     searchQuery: searchQuery
-        // });
-        //TODO: Query to duckDB
-        //TODO: update Query result to queryResult 
+    querySubmit = (data, columns, query) => {
+        console.log("submitQuery")
+        this.setState({
+          queryResult: {
+            data : data,
+            columns : columns,
+            query: query
+          }
+        });
+        var today = new Date();
+        let newPastQuery = {
+          id: this.state.pastQueries.length,
+          query: query,
+          time: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate()+" "+
+          today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds()
+
+        }
+        this.setState(prevState => ({
+          pastQueries: [newPastQuery, ...prevState.pastQueries]
+        }));
+        //TODO: pastQueries
     }
 
   render() {
@@ -32,8 +50,9 @@ class GrqlMain extends Component {
             <div className="col-md-8">
              <QueryContainer querySubmit = {this.querySubmit}/>
              {/* <hr className="zero-margin"/> */}
-             {this.state.searchQuery}
-             <QueryResultContainer queryResult={this.queryResult}/>
+             {/* {this.state.searchQuery} */}
+             <QueryResultContainer data={this.state.queryResult.data}  query={this.state.queryResult.query}
+              columns={this.state.queryResult.columns}/>
             </div>
             <div className="col-md-4">
                 <h5 className="logo-color">Past Queries </h5>

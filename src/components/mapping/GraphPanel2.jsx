@@ -225,6 +225,13 @@ radius = 25
         //   .on('keyup', (event, d) => this.keyup(event, d));
         this.labels = this.svg.append('svg:g').selectAll('.link');
 
+        this.labels.attr("x", function(d) {
+          return ((d.source.x + d.target.x)/2);
+      })
+      .attr("y", function(d) {
+          return ((d.source.y + d.target.y)/2);
+      });
+
         this.restart();
       }
 

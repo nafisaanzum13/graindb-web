@@ -1,10 +1,14 @@
 import React, { useState, Component } from "react";
 class QueryContainer extends Component {
   state = {
-      queryString: ""
+      queryString: "",
+      data: [],
+      columns: [],
+      query: ""
+
   };
 //  [searchString, setSearchString] = useState();
-
+    baseURL = "http://localhost:8080/http://localhost:1294/"
     setSearchString (value) {
         this.setState({
             queryString : value
@@ -13,7 +17,27 @@ class QueryContainer extends Component {
 
     handleClick = () => {
         console.log("in handle click");
-        this.props.querySubmit(this.state.queryString);
+        
+        let queryURL = this.baseURL+"query?q="+this.state.queryString;
+        fetch(queryURL, {})
+        .then(res  => res.json())
+        .then(
+          (result) => {
+            console.log("result", result);
+            if(result.success == true) {
+              this.props.querySubmit(result.data,result.names, result.query);
+              
+            } else {
+              console.log("error", result.error);
+              alert('Error ' + result.error);
+            }
+            this.clearSearchField();
+          },
+          (error) => {
+            console.log("error", error);
+            alert('Error ' + error);
+          }
+        )    
     } 
 
     clearSearchField = () => {
