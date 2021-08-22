@@ -208,3 +208,8 @@ text.id {
   color: black;
   border: 1px solid #128e3ab3;
 }
+
+.link-label {
+  color: black;
+  font-size: 2em;
+}

@@ -9,7 +9,7 @@ import * as d3 from 'd3';
   width = 600;
   height = 500;
   colors = d3.scaleOrdinal(d3.schemeCategory10);
-
+radius = 25
   svg;
 
   nodes = [];
@@ -20,6 +20,7 @@ import * as d3 from 'd3';
   dragLine;
   path;
   circle;
+  linkLabels;
 
   // mouse event vars
   selectedNode= null;
@@ -29,22 +30,78 @@ import * as d3 from 'd3';
   mouseupNode= null;
 
   tick() {
+    this.nodes = this.props.nodes;
+    this.links = this.props.links;
+    console.log("Graph edges ", this.links);
     this.circle.attr('transform', (d) => `translate(${d.x},${d.y})`);
     // draw directed edges with proper padding from node centers
     this.path.attr('d', (d) => {
-      const deltaX = d.target.x - d.source.x;
-      const deltaY = d.target.y - d.source.y;
-      const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-      const normX = deltaX / dist;
-      const normY = deltaY / dist;
-      const sourcePadding = d.left ? 17 : 12;
-      const targetPadding = d.right ? 17 : 12;
-      const sourceX = d.source.x + (sourcePadding * normX);
-      const sourceY = d.source.y + (sourcePadding * normY);
-      const targetX = d.target.x - (targetPadding * normX);
-      const targetY = d.target.y - (targetPadding * normY);
+      // const deltaX = d.target.x - d.source.x;
+      // const deltaY = d.target.y - d.source.y;
+      // const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      // const normX = deltaX / dist;
+      // const normY = deltaY / dist;
+      // const sourcePadding = d.left ? 17 : 12;
+      // const targetPadding = d.right ? 17 : 12;
+      // const sourceX = d.source.x + (sourcePadding * normX);
+      // const sourceY = d.source.y + (sourcePadding * normY);
+      // const targetX = d.target.x - (targetPadding * normX);
+      // const targetY = d.target.y - (targetPadding * normY);
 
-      return `M${sourceX},${sourceY}L${targetX},${targetY}`;
+      // return `M${sourceX},${sourceY}L${targetX},${targetY}`;
+      var x1 = d.source.x,
+      y1 = d.source.y,
+      x2 = d.target.x,
+      y2 = d.target.y,
+      dx = x2 - x1,
+      dy = y2 - y1,
+      dr = Math.sqrt(dx * dx + dy * dy),
+
+      // Defaults for normal edge.
+      drx = dr,
+      dry = dr,
+      xRotation = 0, // degrees
+      largeArc = 0, // 1 or 0
+      sweep = 1; // 1 or 0
+
+    // Self edge.
+    if (d.source == d.target) {
+      // Fiddle with this angle to get loop oriented.
+      xRotation = -45;
+
+      // Needs to be 1.
+      largeArc = 1;
+
+      // Change sweep to change orientation of loop. 
+      //sweep = 0;
+
+      // Make drx and dry different to get an ellipse
+      // instead of a circle.
+      drx = 30;
+      dry = 20;
+
+      // For whatever reason the arc collapses to a point if the beginning
+      // and ending points of the arc are the same, so kludge it.
+      x2 = x2 + 1;
+      y2 = y2 + 1;
+      
+    }
+
+    return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
+  
+    });
+    this.linkLabels.attr("x", function(d) {
+      const sourceDx = Math.max(this.radius, Math.min(this.width - this.radius, d.source.x));
+
+      const targetDx = Math.max(this.radius, Math.min(this.width - this.radius, d.target.x));
+      return ((sourceDx + targetDx) / 2);
+      // return ((d.source.x + d.target.x) / 2);
+    })
+    .attr("y", function(d) {
+      const sourceDy = Math.max(this.radius, Math.min(this.height - this.radius, d.source.y));
+      const targetDy = Math.max(this.radius, Math.min(this.height - this.radius, d.target.y));
+      return ((sourceDy + targetDy) / 2);
+      // return ((d.source.y + d.target.y) / 2);
     });
 
    
@@ -60,6 +117,10 @@ import * as d3 from 'd3';
         name: "",
       }
       this.svgRef = React.createRef();
+      
+    }
+
+    initialize = () => {
       
     }
     componentDidMount() {
@@ -152,6 +213,24 @@ import * as d3 from 'd3';
         //   .on('keydown', (event, d) => this.keydown(event, d))
         //   .on('keyup', (event, d) => this.keyup(event, d));
     
+        this.linkLabels = this.svg.selectAll(".link_label")
+        .data(this.props.links)
+        .enter().append('svg:text')
+        .attr('class', 'link-label')
+        .attr('text-anchor', 'middle')
+        .text(function(d) {
+          return d.name;
+        });
+        
+        this.linkLabels.append("textPath")
+        .attr("xlink:href", function(d, i) {
+          return '#edge' + i;
+        })
+        .style("pointer-events", "none")
+        .text(function(d, i) {
+          return d.name
+        });
+
         this.restart();
       }
 
@@ -162,9 +241,12 @@ import * as d3 from 'd3';
             this.links = this.props.links;
             this.restart()
         }
-    }
-      restart() {
+        this.restart();
+      }
+
+      restart = () => {
         // path (link) group
+
         this.path = this.path.data(this.links);
         // update existing links
         this.path.classed('selected', (d) => d === this.selectedLink)
@@ -194,7 +276,8 @@ import * as d3 from 'd3';
         // circle (node) group
         // NB: the function arg is crucial here! nodes are known by id, not by index!
         this.circle = this.circle.data(this.nodes, (d) => d.id);
-    
+        
+
         // update existing nodes (reflexive & selected visual states)
         this.circle.selectAll('circle')
           .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
@@ -205,21 +288,43 @@ import * as d3 from 'd3';
     
         // add new nodes
         const g = this.circle.enter().append('svg:g');
+
+        this.linkLabels = this.svg.selectAll(".link-label")
+        .data(this.props.links)
+        .text(function(d) {
+          console.log("d",d);
+          return d.name;
+        });
+
+        this.linkLabels.exit().remove();
+
+        this.linkLabels
+        .enter().append('svg:text')
+        .data(this.props.links)
+        .attr('class', 'link-label')
+        .attr('text-anchor', 'middle')
+        .text(function(d) {
+          console.log("d2",d);
+          return d.name;
+        }).merge(this.linkLabels);;
     
         g.append('svg:circle')
           .attr('class', 'node')
-          .attr('r', 20)
+          .attr('r', this.radius)
           .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
           .style('stroke', (d) => d3.rgb(this.colors(d.id)).darker().toString())
           .classed('reflexive', (d) => d.reflexive)
           .on('mouseover', (event, d) => {
             if (!this.mousedownNode || d === this.mousedownNode) return;
             // enlarge target node
+            this.edgeDraw = true;
             d3.select(event.currentTarget).attr('transform', 'scale(1.1)');
           })
           .on('mouseout', (event, d) => {
-            if (!this.mousedownNode || d === this.mousedownNode) return;
+            // if (!this.mousedownNode || d === this.mousedownNode) return;
+            if (!this.mousedownNode) return;
             // unenlarge target node
+            this.edgeDraw = true;
             d3.select(event?.currentTarget).attr('transform', '');
           })
           .on('mousedown', (event, d) => {
@@ -229,7 +334,7 @@ import * as d3 from 'd3';
             this.mousedownNode = d;
             this.selectedNode = (this.mousedownNode === this.selectedNode) ? null : this.mousedownNode;
             this.selectedLink = null;
-    
+            this.edgeDraw = false;
             // reposition drag line
             this.dragLine
               .style('marker-end', 'url(#end-arrow)')
@@ -239,7 +344,7 @@ import * as d3 from 'd3';
             this.restart();
           })
           .on('mouseup', (event, d) => {
-            if (!this.mousedownNode) return;
+            if (!this.mousedownNode || !this.edgeDraw) return;
     
             // needed by FF
             this.dragLine
@@ -248,33 +353,34 @@ import * as d3 from 'd3';
     
             // check for drag-to-self
             this.mouseupNode = d;
-            if (this.mouseupNode === this.mousedownNode) {
-              this.resetMouseVars();
-              return;
-            }
+            // if (this.mouseupNode === this.mousedownNode) {
+            //   this.resetMouseVars();
+            //   return;
+            // }
     
             // unenlarge target node
             d3.select(event.currentTarget).attr('transform', '');
     
             // add link to graph (update if exists)
             // NB: links are strictly source < target; arrows separately specified by booleans
-            const isRight = this.mousedownNode.id < this.mouseupNode.id;
-            const source = isRight ? this.mousedownNode : this.mouseupNode;
-            const target = isRight ? this.mouseupNode : this.mousedownNode;
+            // const isRight = this.mousedownNode.id < this.mouseupNode.id;
+            // const source = this.mouseupNode ;
+            // const target = this.mousedownNode;
+            // const isRight = true;
 
-
-            this.props.addEdge(this.mouseupNode, this.mousedownNode)
+            this.props.addEdge(this.mousedownNode, this.mouseupNode)
     
-            let link = this.links.filter((l) => l.source === source && l.target === target)[0];
-            if (link) {
-              link[isRight ? 'right' : 'left'] = true;
-            } else {
-              this.links.push({ source, target, left: !isRight, right: isRight });
-            }
+            // let link = this.links.filter((l) => l.source === source && l.target === target)[0];
+            // if (link) {
+            //   link[isRight ? 'right' : 'left'] = true;
+            // } else {
+            //   this.links.push({ source, target, left: !isRight, right: isRight });
+            // }
     
             // select new link
-            this.selectedLink = link;
+            // this.selectedLink = link;
             this.selectedNode = null;
+            this.resetMouseVars();
             this.restart();
           });
     
@@ -286,6 +392,7 @@ import * as d3 from 'd3';
           .text((d) => d.name);
     
         this.circle = g.merge(this.circle);
+        // this.linkLabels = g.merge(this.linkLabels);
     
         // set the graph in motion
         this.force

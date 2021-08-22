@@ -31,13 +31,13 @@ class NodeAddModal extends Component {
             </Modal.Header>
             <Modal.Body>
                 <div className="row">
-                    <div className="col-md-10 offset-md-1 text-center">
-                        <label>
-                            Node Type:  
-                            <input type="text" name="name" className="input-sm input-block"
-                            value={this.state.value} onChange={this.handleChange}
-                            placeholder="Enter type of the node"/>
-                        </label>
+                    <div className="col-md-10 offset-md-1">
+                    <label>
+                    Node Type:
+                    <input type="text" name="name" 
+                    value={this.state.value} onChange={this.handleChange}
+                    placeholder="Enter type of the node"/>
+                </label>
                     </div>
                 </div>
             </Modal.Body>
@@ -46,7 +46,7 @@ class NodeAddModal extends Component {
                 Close
             </Button>
             <Button variant="primary" onClick={this.handleSubmit}>
-                Submit
+                Save Changes
             </Button>
             </Modal.Footer>
         </Modal>
