@@ -50,10 +50,10 @@ radius = 25
       // const targetY = d.target.y - (targetPadding * normY);
 
       // return `M${sourceX},${sourceY}L${targetX},${targetY}`;
-      var x1 = d.source.x,
-      y1 = d.source.y,
-      x2 = d.target.x,
-      y2 = d.target.y,
+      var x1 = d.source.x+this.radius,
+      y1 = d.source.y+this.radius,
+      x2 = d.target.x+this.radius,
+      y2 = d.target.y+this.radius,
       dx = x2 - x1,
       dy = y2 - y1,
       dr = Math.sqrt(dx * dx + dy * dy),
@@ -68,7 +68,7 @@ radius = 25
     // Self edge.
     if (d.source == d.target) {
       // Fiddle with this angle to get loop oriented.
-      xRotation = -45;
+      xRotation = 45;
 
       // Needs to be 1.
       largeArc = 1;
@@ -78,8 +78,8 @@ radius = 25
 
       // Make drx and dry different to get an ellipse
       // instead of a circle.
-      drx = 30;
-      dry = 20;
+      drx = 50;
+      dry = 50;
 
       // For whatever reason the arc collapses to a point if the beginning
       // and ending points of the arc are the same, so kludge it.
@@ -91,13 +91,17 @@ radius = 25
     return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
   
     });
+    this.labels
+          .attr("x", (d) => ((d.source.x + d.target.x)/2))
+            .attr("y",  (d) => ((d.source. y+ d.target.y)/2));
+          
 
-    this.labels.attr("x", function(d) {
-        return ((d.source.x + d.target.x)/2);
-    })
-    .attr("y", function(d) {
-        return ((d.source.y + d.target.y)/2);
-    });
+    // this.labels.attr("x", function(d) {
+    //     return ((d.source.x + d.target.x)/2);
+    // })
+    // .attr("y", function(d) {
+    //     return ((d.source.y + d.target.y)/2);
+    // });
     // this.linkLabels.attr("x", function(d) {
     //   const sourceDx = Math.max(this.radius, Math.min(this.width - this.radius, d.source.x));
 
@@ -185,6 +189,8 @@ radius = 25
           
         // define arrow markers for graph links
         this.svg.append('svg:defs').append('svg:marker')
+          .data(['start'])
+          .enter().append("svg:marker") 
           .attr('id', 'end-arrow')
           .attr('viewBox', '0 -5 10 10')
           .attr('refX', 6)
@@ -195,16 +201,18 @@ radius = 25
           .attr('d', 'M0,-5L10,0L0,5')
           .attr('fill', '#000');
     
-        this.svg.append('svg:defs').append('svg:marker')
-          .attr('id', 'start-arrow')
-          .attr('viewBox', '0 -5 10 10')
-          .attr('refX', 4)
-          .attr('markerWidth', 3)
-          .attr('markerHeight', 3)
-          .attr('orient', 'auto')
-          .append('svg:path')
-          .attr('d', 'M10,-5L0,0L10,5')
-          .attr('fill', '#000');
+          this.svg.append("svg:defs").selectAll("marker")
+          .data(['end'])
+          .enter().append("svg:marker") 
+          .attr("id", "end-arrow")
+          .attr("viewBox", "0 -5 10 10")
+          .attr("refX", 0)
+          .attr("markerWidth", 10)
+          .attr("markerHeight", 10)
+          .attr("orient", "auto")
+        .append("svg:path")
+          .attr("d", "M0,-5L10,0L0,5")
+          .attr("fill", "#000");
     
         // line displayed when dragging new nodes
         this.dragLine = this.svg.append('svg:path')
@@ -212,8 +220,16 @@ radius = 25
           .attr('d', 'M0,0L0,0'); //TODO: fix this
     
         // handles to link and node element groups
-        this.path = this.svg.append('svg:g').selectAll('path');
+        this.path = this.svg.append('svg:g').selectAll('path')
+        .data(this.links)
+        .enter()
+        .append("line")
+        .attr("stroke", "#aaa")
+        .attr("stroke-width", "1px")
+        .attr("marker-end","url(#end-arrow)");;
         this.circle = this.svg.append('svg:g').selectAll('g');
+
+        this.labels = this.svg.append('svg:g').selectAll('path');
     
         // app starts here
         this.svg.on('mousedown', (event, d) => this.mousedown(event, d))
@@ -223,14 +239,14 @@ radius = 25
         // d3.select(window)
         //   .on('keydown', (event, d) => this.keydown(event, d))
         //   .on('keyup', (event, d) => this.keyup(event, d));
-        this.labels = this.svg.append('svg:g').selectAll('.link');
+        // this.labels = this.svg.append('svg:g').selectAll('path').append('svg:text');
 
-        this.labels.attr("x", function(d) {
-          return ((d.source.x + d.target.x)/2);
-      })
-      .attr("y", function(d) {
-          return ((d.source.y + d.target.y)/2);
-      });
+      //   this.labels.attr("x", function(d) {
+      //     return ((d.source.x + d.target.x)/2);
+      // })
+      // .attr("y", function(d) {
+      //     return ((d.source.y + d.target.y)/2);
+      // });
 
         this.restart();
       }
@@ -247,6 +263,16 @@ radius = 25
 
       restart = () => {
         // path (link) group
+        this.svg.append("svg:defs").append("svg:marker")
+          .attr("id", "end-arrow")
+          .attr("viewBox", "0 -5 10 10")
+          .attr("refX", 10)
+          .attr("markerWidth", 10)
+          .attr("markerHeight", 10)
+          .attr("orient", "auto")
+        .append("svg:path")
+          .attr("d", "M0,-5L10,0L0,5")
+          .attr("fill", "#000");
 
         this.path = this.path.data(this.links);
         // update existing links
@@ -261,8 +287,8 @@ radius = 25
         this.path = this.path.enter().append('svg:path')
           .attr('class', 'link')
           .classed('selected', (d) => d === this.selectedLink)
-          .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
-          .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '')
+          .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : 'url(#start-arrow)')
+          .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : 'url(#end-arrow)')
           .on('mousedown', (event, d) => {
             if (event.ctrlKey) return;
     
@@ -271,8 +297,18 @@ radius = 25
             this.selectedLink = (this.mousedownLink === this.selectedLink) ? null : this.mousedownLink;
             this.selectedNode = null;
             this.restart();
-          })
-          .merge(this.path);
+          }).merge(this.path);
+
+          this.labels = this.labels.data(this.links);
+          this.labels.exit().remove();
+
+          this.labels = this.labels.enter().append('svg:text')
+          .attr("x", (d) => ((d.source.x + d.target.x)/2))
+            .attr("y",  (d) => ((d.source. y+ d.target.y)/2))
+          .text("label").merge(this.path)
+
+          this.path = this.path.merge(this.path);
+          
     
         // circle (node) group
         // NB: the function arg is crucial here! nodes are known by id, not by index!
@@ -309,18 +345,24 @@ radius = 25
         //   return d.name;
         // }).merge(this.linkLabels);
 
-        this.labels = this.labels.data(this.links);
+        // this.labels = this.labels.data(this.links);
 
-        this.labels.exit().remove();
+        // this.labels.exit().remove();
         
-        this.labels.enter()
-            .append("text")
-            .data(this.links)
-            .attr("text-anchor", "middle")
-          .attr("fill", "Black")
-          .style("font", "normal 12px")
-          .attr("dy", ".35em")
-          .text(function(d) { return d.name; })
+        // this.labels.enter()
+        //     .append("text")
+        //     .data(this.links)
+        //     .attr("text-anchor", "middle")
+        //   .attr("fill", "Black")
+        //   .style("font", "normal 12px")
+        //   .attr("dy", ".35em")
+        // //   .attr("x", function(d) {
+        // //     return ((d.source.x + d.target.x)/2);
+        // // })
+        // // .attr("y", function(d) {
+        // //     return ((d.source.y + d.target.y)/2);
+        // // })
+        //   .text(function(d) { return d.name; })
             // .append("textPath")
             // .attr("startOffset", "50%")
             // .attr("xlink:href", function(d,i){ return "#id" + i})
