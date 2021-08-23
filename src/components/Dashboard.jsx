@@ -108,7 +108,7 @@ class Dashboard extends Component {
               <Tab eventKey="home" title="Relational to Graph Mapping">
                 <MappingPanel tables={this.state.tables} graph={this.state.graph} onChangeGraph={this.onChangeGraph}/>
               </Tab>
-              <Tab eventKey="grql" title="Query DuckDB using GRQL">
+              <Tab eventKey="grql" title="Query GrainDB using GRQL">
                 <GrqlMain tables={this.state.tables} graph={this.state.graph}  />
               </Tab>
               

@@ -15,9 +15,16 @@ class TableContainer extends Component {
                     <div className="col-md-10 selectable-table-div" draggable="true"
                     onDragStart = {(e) => this.onDragStart(e, this.props.table)}
                     >
-                    {this.props.table.name}<i className="fa fa-hand-rock-o"></i>
+                    <b>{this.props.table.name}</b> <i className="fa fa-hand-rock-o"></i>
                     </div>
                     <div className="col-md-1 text-right"><i className="fa fa-bars"></i></div>
+                    <div className="col-md-12 ">
+                        <small><b>|</b>|</small>
+                    {this.props.table.columns.map(column => (
+                        <small> {column} |</small>
+                    ))}
+                    <small><b>|</b></small>
+                    </div>
                 </div> 
                 <hr className="zero-margin"/>
             </div>
