@@ -102,7 +102,7 @@ img {
 .tooltip-on-icon {
   position: relative;
   display: inline-block;
-  border-bottom: 1px dotted #128e3ab3;
+  /* border-bottom: 1px dotted #128e3ab3; */
   cursor: pointer;
 }
 
@@ -212,4 +212,10 @@ text.id {
 .link-label {
   color: black;
   font-size: 2em;
+}
+
+.column-header {
+  background-color: #c2e7ceb3;
+  color: black;
+  border: 1px solid white;
 }

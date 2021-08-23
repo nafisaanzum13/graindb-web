@@ -1,12 +1,25 @@
 import React, { Component } from "react";
+import TableDetailsModal from "./TableDetailsModal";
+
 class TableContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            
+            showModal : false
         };
 
       }
+      handleClose = () => {
+        this.setState({
+            showModal: false
+          });
+      };
+      handleShow = () => {
+          this.setState({
+            showModal: true
+          });
+      };
+
   render() {
     return (
         <div className="row">
@@ -17,7 +30,12 @@ class TableContainer extends Component {
                     >
                     <b>{this.props.table.name}</b> <i className="fa fa-hand-rock-o"></i>
                     </div>
-                    <div className="col-md-1 text-right"><i className="fa fa-bars"></i></div>
+                    <div className="col-md-1 text-right">
+                        <div className="tooltip-on-icon">
+                            <i className="fa fa-bars" onClick={this.handleShow}/> 
+                            <small class="tooltiptext">See Table Details</small>
+                        </div>
+                    </div>
                     <div className="col-md-12 ">
                         <small><b>|</b>|</small>
                     {this.props.table.columns.map(column => (
@@ -26,6 +44,8 @@ class TableContainer extends Component {
                     <small><b>|</b></small>
                     </div>
                 </div> 
+                <TableDetailsModal show={this.state.showModal} handleClose={this.handleClose}
+                table = {this.props.table} />
                 <hr className="zero-margin"/>
             </div>
         </div>
