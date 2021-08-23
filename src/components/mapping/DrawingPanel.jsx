@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import GraphPanel2 from "./GraphPanel2";
+import GraphPanel2 from "./GraphPanel";
 import NodeAddModal from "./NodeAddModal";
 import EdgeAddModal from "./EdgeAddModal";
 
