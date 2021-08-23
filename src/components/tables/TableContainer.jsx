@@ -33,7 +33,7 @@ class TableContainer extends Component {
                     <div className="col-md-1 text-right">
                         <div className="tooltip-on-icon">
                             <i className="fa fa-bars" onClick={this.handleShow}/> 
-                            <small class="tooltiptext">See Table Details</small>
+                            <small class="tooltiptext">See Details</small>
                         </div>
                     </div>
                     <div className="col-md-12 ">

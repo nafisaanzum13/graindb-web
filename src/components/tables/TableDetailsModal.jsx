@@ -14,9 +14,13 @@ class TableDetailsModal extends Component {
   render() {
     return (
       <>
-        <Modal show={this.props.show} onHide={this.props.handleClose}>
+        <Modal show={this.props.show} onHide={this.props.handleClose}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        // centered 
+        >
             <Modal.Header closeButton>
-            <Modal.Title>Details on Table {this.props.table.name}</Modal.Title>
+            <Modal.Title style={{textAlign: "center"}}>Details on Table <b className="logo-color text-uppercase">{this.props.table.name}</b></Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <div className="row">
@@ -49,12 +53,9 @@ class TableDetailsModal extends Component {
                 </div>
             </Modal.Body>
             <Modal.Footer>
-            <Button variant="secondary" onClick={this.props.handleClose}>
-                Close
-            </Button>
-            <Button variant="primary" onClick={this.handleSubmit}>
-                Save Changes
-            </Button>
+              <Button centered variant="secondary" onClick={this.props.handleClose}>
+                  Close
+              </Button>
             </Modal.Footer>
         </Modal>
       </>

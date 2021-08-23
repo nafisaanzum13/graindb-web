@@ -77,7 +77,11 @@ class EdgeAddModal extends Component {
     const columns= this.state.columns.map((col) => <option value={col}> {col}</option>)
     return (
       <>
-        <Modal show={this.props.show} onHide={this.props.handleClose}>
+        <Modal show={this.props.show} onHide={this.props.handleClose}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        // centered
+        >
             <Modal.Header closeButton>
             <Modal.Title>Create Edge Type from Node {this.props.fromNode.name} - {this.props.toNode.name}</Modal.Title>
             </Modal.Header>

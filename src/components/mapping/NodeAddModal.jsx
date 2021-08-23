@@ -25,7 +25,11 @@ class NodeAddModal extends Component {
   render() {
     return (
       <>
-        <Modal show={this.props.show} onHide={this.props.handleClose}>
+        <Modal show={this.props.show} onHide={this.props.handleClose}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        // centered
+        >
             <Modal.Header closeButton>
             <Modal.Title>Create node on Table {this.props.table.name}?</Modal.Title>
             </Modal.Header>
