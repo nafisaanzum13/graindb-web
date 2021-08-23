@@ -46,22 +46,3 @@ render() {
 
 export default RelationalTables;
 
-function populateTable() {
-    const tables = [];
-    tables.push({id: 0, name: "Customer", columns: ['cid', 'name', 'address']});
-    tables.push({id: 1, name: "Product", columns: ['pid', 'description', 'price']});
-    tables.push({id: 2, name: "SingleOrderItems", columns: ['sid','pid', 'quantity']});
-    tables.push({id: 3, name: "Order", columns: ['oid', 'soid', "address"]});
-    tables.push({id: 3, name: "Supplier", columns: ['oid', 'sid', "address"]});
-    tables.push({id: 0, name: "Customer", columns: ['cid', 'name', 'address']});
-    tables.push({id: 1, name: "Product", columns: ['pid', 'description', 'price']});
-    tables.push({id: 2, name: "SingleOrderItems", columns: ['sid','pid', 'quantity']});
-    tables.push({id: 3, name: "Order", columns: ['oid', 'soid', "address"]});
-    tables.push({id: 3, name: "Supplier", columns: ['oid', 'sid', "address"]});
-    tables.push({id: 0, name: "Customer", columns: ['cid', 'name', 'address']});
-    tables.push({id: 1, name: "Product", columns: ['pid', 'description', 'price']});
-    tables.push({id: 2, name: "SingleOrderItems", columns: ['sid','pid', 'quantity']});
-    tables.push({id: 3, name: "Order", columns: ['oid', 'soid', "address"]});
-    tables.push({id: 3, name: "Supplier", columns: ['oid', 'sid', "address"]});
-    return tables;
-}
