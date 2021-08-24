@@ -1,8 +1,7 @@
-import React, { Component } from "react";
-import ReactDOM from 'react-dom'
+import React, { Component} from "react";
 import * as d3 from 'd3';
 
-  class GraphPanel extends Component {
+  class GraphShowPanel extends Component {
     
   svgRef= React.RefObject;
   dataset = [];
@@ -20,6 +19,7 @@ import * as d3 from 'd3';
   dragLine;
   path;
   circle;
+  linkLabels;
   labels;
 
   // mouse event vars
@@ -28,6 +28,95 @@ import * as d3 from 'd3';
   mousedownLink= null;
   mousedownNode= null;
   mouseupNode= null;
+
+  tick() {
+    this.nodes = this.props.nodes;
+    this.links = this.props.links;
+    // console.log("Graph edges ", this.links);
+    this.circle.attr('transform', (d) => `translate(${d.x},${d.y})`);
+    // draw directed edges with proper padding from node centers
+    this.path.attr('d', (d) => {
+      // const deltaX = d.target.x - d.source.x;
+      // const deltaY = d.target.y - d.source.y;
+      // const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      // const normX = deltaX / dist;
+      // const normY = deltaY / dist;
+      // const sourcePadding = d.left ? 17 : 12;
+      // const targetPadding = d.right ? 17 : 12;
+      // const sourceX = d.source.x + (sourcePadding * normX);
+      // const sourceY = d.source.y + (sourcePadding * normY);
+      // const targetX = d.target.x - (targetPadding * normX);
+      // const targetY = d.target.y - (targetPadding * normY);
+
+      // return `M${sourceX},${sourceY}L${targetX},${targetY}`;
+      var x1 = d.source.x+this.radius,
+      y1 = d.source.y+this.radius,
+      x2 = d.target.x+this.radius,
+      y2 = d.target.y+this.radius,
+      dx = x2 - x1,
+      dy = y2 - y1,
+      dr = Math.sqrt(dx * dx + dy * dy),
+
+      // Defaults for normal edge.
+      drx = dr,
+      dry = dr,
+      xRotation = 0, // degrees
+      largeArc = 0, // 1 or 0
+      sweep = 1; // 1 or 0
+
+    // Self edge.
+    if (d.source == d.target) {
+      // Fiddle with this angle to get loop oriented.
+      xRotation = 45;
+
+      // Needs to be 1.
+      largeArc = 1;
+
+      // Change sweep to change orientation of loop. 
+      //sweep = 0;
+
+      // Make drx and dry different to get an ellipse
+      // instead of a circle.
+      drx = 50;
+      dry = 50;
+
+      // For whatever reason the arc collapses to a point if the beginning
+      // and ending points of the arc are the same, so kludge it.
+      x2 = x2 + 1;
+      y2 = y2 + 1;
+      
+    }
+
+    return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
+  
+    });
+    this.labels
+          .attr("x", (d) => ((d.source.x + d.target.x)/2))
+            .attr("y",  (d) => ((d.source. y+ d.target.y)/2));
+          
+
+    // this.labels.attr("x", function(d) {
+    //     return ((d.source.x + d.target.x)/2);
+    // })
+    // .attr("y", function(d) {
+    //     return ((d.source.y + d.target.y)/2);
+    // });
+    // this.linkLabels.attr("x", function(d) {
+    //   const sourceDx = Math.max(this.radius, Math.min(this.width - this.radius, d.source.x));
+
+    //   const targetDx = Math.max(this.radius, Math.min(this.width - this.radius, d.target.x));
+    //   return ((sourceDx + targetDx) / 2);
+    //   // return ((d.source.x + d.target.x) / 2);
+    // })
+    // .attr("y", function(d) {
+    //   const sourceDy = Math.max(this.radius, Math.min(this.height - this.radius, d.source.y));
+    //   const targetDy = Math.max(this.radius, Math.min(this.height - this.radius, d.target.y));
+    //   return ((sourceDy + targetDy) / 2);
+    //   // return ((d.source.y + d.target.y) / 2);
+    // });
+
+   
+  }
 
 
   // only respond once per keydown
@@ -42,7 +131,11 @@ import * as d3 from 'd3';
       
     }
 
+    initialize = () => {
+      
+    }
     componentDidMount() {
+        let size = 500;
         
         this.svg = d3.select(this.svgRef.current)
           .append("svg")
@@ -53,10 +146,15 @@ import * as d3 from 'd3';
         // set up initial nodes and links
         //  - nodes are known by 'id', not by index in array.
         //  - reflexive edges are indicated on the node (as a bold black circle).
+        //  - links are always source < target; edge directions are set by 'left' and 'right'.
         this.nodes = this.props.nodes;
-        this.links = this.props.links;
         this.lastNodeId = 2;
-
+        this.links = this.props.links;
+        // [
+        //   { source: this.nodes[0], target: this.nodes[1], left: false, right: true },
+        //   { source: this.nodes[1], target: this.nodes[2], left: false, right: true }
+        // ];
+    
         // init D3 force layout
         this.force = d3.forceSimulation()
           .force('link', d3.forceLink().id((d) => d.id).distance(150))
@@ -67,9 +165,11 @@ import * as d3 from 'd3';
     
         // init D3 drag support
         this.drag = d3.drag()
+          // Mac Firefox doesn't distinguish between left/right click when Ctrl is held... 
           .filter((event, d) => event.button === 0 || event.button === 2)
           .on('start', (event, d) => {
             if (!event.active) this.force.alphaTarget(0.3).restart();
+    
             d.fx = d.x;
             d.fy = d.y;
           })
@@ -79,18 +179,22 @@ import * as d3 from 'd3';
           })
           .on('end', (event, d) => {
             if (!event.active) this.force.alphaTarget(0);
+    
             d.fx = null;
             d.fy = null;
           });
+
+
+          
         // define arrow markers for graph links
         this.svg.append('svg:defs').append('svg:marker')
           .data(['start'])
           .enter().append("svg:marker") 
-          .attr('id', 'start-arrow')
+          .attr('id', 'end-arrow')
           .attr('viewBox', '0 -5 10 10')
-          .attr('refX', 0)
-          .attr('markerWidth', 10)
-          .attr('markerHeight', 10)
+          .attr('refX', 6)
+          .attr('markerWidth', 3)
+          .attr('markerHeight', 3)
           .attr('orient', 'auto')
           .append('svg:path')
           .attr('d', 'M0,-5L10,0L0,5')
@@ -121,8 +225,7 @@ import * as d3 from 'd3';
         .append("line")
         .attr("stroke", "#aaa")
         .attr("stroke-width", "1px")
-        .attr("marker-end","url(#end-arrow)");
-
+        .attr("marker-end","url(#end-arrow)");;
         this.circle = this.svg.append('svg:g').selectAll('g');
 
         this.labels = this.svg.append('svg:g').selectAll('path');
@@ -479,96 +582,6 @@ import * as d3 from 'd3';
       //     this.svg.classed('ctrl', false);
       //   }
       // }
-  
-
-  tick() {
-    this.nodes = this.props.nodes;
-    this.links = this.props.links;
-    // console.log("Graph edges ", this.links);
-    this.circle.attr('transform', (d) => `translate(${d.x},${d.y})`);
-    // draw directed edges with proper padding from node centers
-    this.path.attr('d', (d) => {
-      // const deltaX = d.target.x - d.source.x;
-      // const deltaY = d.target.y - d.source.y;
-      // const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-      // const normX = deltaX / dist;
-      // const normY = deltaY / dist;
-      // const sourcePadding = d.left ? 17 : 12;
-      // const targetPadding = d.right ? 17 : 12;
-      // const sourceX = d.source.x + (sourcePadding * normX);
-      // const sourceY = d.source.y + (sourcePadding * normY);
-      // const targetX = d.target.x - (targetPadding * normX);
-      // const targetY = d.target.y - (targetPadding * normY);
-
-      // return `M${sourceX},${sourceY}L${targetX},${targetY}`;
-      var x1 = d.source.x,
-      y1 = d.source.y,
-      x2 = d.target.x+this.radius,
-      y2 = d.target.y+this.radius,
-      dx = x2 - x1,
-      dy = y2 - y1,
-      dr = Math.sqrt(dx * dx + dy * dy),
-
-      // Defaults for normal edge.
-      drx = dr,
-      dry = dr,
-      xRotation = 0, // degrees
-      largeArc = 0, // 1 or 0
-      sweep = 1; // 1 or 0
-
-    // Self edge.
-    if (d.source == d.target) {
-      // Fiddle with this angle to get loop oriented.
-      xRotation = 45;
-
-      // Needs to be 1.
-      largeArc = 1;
-
-      // Change sweep to change orientation of loop. 
-      //sweep = 0;
-
-      // Make drx and dry different to get an ellipse
-      // instead of a circle.
-      drx = 50;
-      dry = 50;
-
-      // For whatever reason the arc collapses to a point if the beginning
-      // and ending points of the arc are the same, so kludge it.
-      x2 = x2 + 1;
-      y2 = y2 + 1;
-      
-    }
-
-    return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
-  
-    });
-    this.labels
-          .attr("x", (d) => ((d.source.x + d.target.x)/2))
-            .attr("y",  (d) => ((d.source. y+ d.target.y)/2));
-          
-
-    // this.labels.attr("x", function(d) {
-    //     return ((d.source.x + d.target.x)/2);
-    // })
-    // .attr("y", function(d) {
-    //     return ((d.source.y + d.target.y)/2);
-    // });
-    // this.linkLabels.attr("x", function(d) {
-    //   const sourceDx = Math.max(this.radius, Math.min(this.width - this.radius, d.source.x));
-
-    //   const targetDx = Math.max(this.radius, Math.min(this.width - this.radius, d.target.x));
-    //   return ((sourceDx + targetDx) / 2);
-    //   // return ((d.source.x + d.target.x) / 2);
-    // })
-    // .attr("y", function(d) {
-    //   const sourceDy = Math.max(this.radius, Math.min(this.height - this.radius, d.source.y));
-    //   const targetDy = Math.max(this.radius, Math.min(this.height - this.radius, d.target.y));
-    //   return ((sourceDy + targetDy) / 2);
-    //   // return ((d.source.y + d.target.y) / 2);
-    // });
-
-   
-  }
   }
   
-  export default GraphPanel;
+  export default GraphShowPanel;

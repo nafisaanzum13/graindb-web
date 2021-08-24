@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import GraphPanel2 from "./GraphPanel";
+import GraphPanel from "./GraphPanel";
 import NodeAddModal from "./NodeAddModal";
 import EdgeAddModal from "./EdgeAddModal";
 
@@ -47,7 +47,8 @@ class DrawingPanel extends Component {
           table ={this.state.droppedTable} createNodeType={this.createNodeType}/>
           <EdgeAddModal tables = {this.props.tables} show={this.state.showEdgeModal} handleClose={this.handleClose}
           fromNode ={this.state.fromNode} toNode ={this.state.toNode} createEdgeType={this.createEdgeType}/>
-        <GraphPanel2 nodes={this.state.nodes} links={this.state.links} addEdge={this.addEdge}/>
+        <GraphPanel nodes={this.state.nodes} links={this.state.links} addEdge={this.addEdge}
+        />
         </div>
       </>
     );
