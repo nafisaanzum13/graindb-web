@@ -50,7 +50,7 @@ class NodeAddModal extends Component {
                 Close
             </Button>
             <Button variant="primary" onClick={this.handleSubmit}>
-                Save Changes
+                Create
             </Button>
             </Modal.Footer>
         </Modal>

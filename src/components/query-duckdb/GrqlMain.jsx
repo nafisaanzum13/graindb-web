@@ -14,10 +14,13 @@ class GrqlMain extends Component {
             data:[],
             columns:[],
             query:""
-          }
+          },
+          nodePkHash : []
         };
     }
 
+    
+  
     querySubmit = (data, columns, query) => {
         console.log("submitQuery")
         this.setState({
@@ -52,7 +55,8 @@ class GrqlMain extends Component {
              {/* <hr className="zero-margin"/> */}
              {/* {this.state.searchQuery} */}
              <QueryResultContainer data={this.state.queryResult.data}  query={this.state.queryResult.query}
-              columns={this.state.queryResult.columns}/>
+              columns={this.state.queryResult.columns} tables={this.props.tables} 
+             graph={this.props.graph}/>
             </div>
             <div className="col-md-4">
                 <h5 className="logo-color">Past Queries </h5>
