@@ -27,7 +27,9 @@ class QueryResultContainer extends Component {
     this.nodePkHash = {}
     this.state ={
       nodes:[],
-      links:[]
+      links:[],
+      dataArray: [],
+      tableAttributes: []
     };
   }
 
@@ -65,9 +67,7 @@ class QueryResultContainer extends Component {
     console.log("name: ",name.toLowerCase())
     let returnNode = null;
     this.props.graph.nodes.forEach((node) => {
-      console.log("node.name.toLowerCase()",node.name.toLowerCase());
-      console.log("(node.name.toLowerCase()) == (name.toLowerCase())",((node.name.toLowerCase()) == (name.toLowerCase())) );
-      if((node.name.toLowerCase()) == (name.toLowerCase())) {
+        if((node.name.toLowerCase()) == (name.toLowerCase())) {
         console.log("node: ", node);
         returnNode = node;
       }
@@ -102,9 +102,11 @@ class QueryResultContainer extends Component {
     let nodeTypeAndVarNameObjects = this.getNodeTypeAndVarNamesFromQuery();
     let edgeTypeAndVarNameObjects = this.getEdgeTypeAndVarNamesFromQuery();
 
-    if(nodeTypeAndVarNameObjects=={} && edgeTypeAndVarNameObjects=={}) {
+    if(Object.keys(nodeTypeAndVarNameObjects).length==0 && Object.keys(edgeTypeAndVarNameObjects).length==0) {
+      console.log("This is where it should enter")
       return returnTypesArray;
     }
+    console.log("This should not print!")
     //At least one node and edge query
     
     let returnString = this.props.query.toLowerCase().match(/select(.*)from/)[1];
@@ -162,6 +164,7 @@ class QueryResultContainer extends Component {
   convertTabularDataIntoNodesAndEdges = (returnTypeArray) => {
     //figure out the return nodes
     let nodes = [];
+    let links = [];
     let attributeArray = [];
     let dataArray = [];
     console.log("returnNodeArray",returnTypeArray);
@@ -170,6 +173,7 @@ class QueryResultContainer extends Component {
     for(let i=0; i<this.props.data[0].length; i++) {
       let start = 0
       let data = [];
+      let nodesForEdges = [];
       for(let j =0; j<returnTypeArray.length; j++) {
           let type =returnTypeArray[j];
           if(type.type == "property") {
@@ -186,6 +190,7 @@ class QueryResultContainer extends Component {
             data.push(JSON.stringify(propertyObject));
             let newNodeObject = this.createNodeObject(id, nodeType, propertyObject, this.props.data[start][i], nodes)
             console.log("newNodeObject",newNodeObject);
+            nodesForEdges.push(newNodeObject);
             if(newNodeObject.id==id) {
               nodes.push(newNodeObject)
               id ++;
@@ -200,6 +205,17 @@ class QueryResultContainer extends Component {
       }
       console.log("data", data);
       dataArray.push(data);
+      if(nodesForEdges.length>1) {
+        let newLink ={ 
+          id: links.length, 
+          source: nodesForEdges[0], 
+          target: nodesForEdges[1], 
+          left : false, 
+          right : true
+        };
+        links.push(newLink);
+      }
+      
     }
     for(let j =0; j<returnTypeArray.length; j++) {
       attributeArray.push(returnTypeArray[j].name);
@@ -211,7 +227,8 @@ class QueryResultContainer extends Component {
     this.setTableAttributes(attributeArray);
     this.setTableData(dataArray);
     this.setState({
-      nodes: nodes
+      nodes: nodes,
+      links: links
     })
 
   }
@@ -220,8 +237,10 @@ class QueryResultContainer extends Component {
     let returnVarArray = this.getReturnVarsAndTypes();
     console.log("returnVarArray",returnVarArray);
     if(returnVarArray.length==0) { //no node or edge used in the query
+      console.log("No node and edges")
       this.setTableDataFromDataArray();
     } else { //node and/ßor edge var present;
+      console.log("node and edge present")
       this.convertTabularDataIntoNodesAndEdges(returnVarArray);
     }
   }
@@ -256,7 +275,13 @@ class QueryResultContainer extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if(prevProps != this.props) {
+    console.log("inside component did update!")
+    if((prevProps.query != this.props.query)
+    || (prevProps.attributes != this.props.attributes) ||
+    (prevProps.data != this.props.data)  ) {
+      console.log("prop changed!", this.props.data)
+
+      this.resetVars();
       this.init();
     }
    
