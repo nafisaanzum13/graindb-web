@@ -113,11 +113,36 @@ class QueryResultContainer extends Component {
       let elem = word.trim();
       console.log("elem",elem);
       console.log("elem elem.split('.').length: ",elem.split('.').length);
-      if(elem.split('.').length==1) {
-        let nodeTypeNode = this.getNodeTypeObject(nodeTypeAndVarNameObjects[elem]);
-        console.log("nodeTypeNode",nodeTypeNode);
-        returnTypesArray.push(nodeTypeNode);
+      let splits = elem.split('.');
+      let retObject = {
+        name: elem,
+        type: "",
+        object: {}
       }
+      if(splits.length>1 && splits[1] != "*") {
+        retObject['type'] = "property";
+      } else {
+        if(splits.length>1 && splits[1] != "*") {
+          
+          elem = splits[0];
+        }
+        let type = nodeTypeAndVarNameObjects[elem];
+        if(type === undefined) {
+          type = edgeTypeAndVarNameObjects[elem];
+          if(type === undefined) {
+            alert('Error: return type is neither node or edge!');
+            return;
+          } else {
+            retObject['type']='edge';
+            retObject['object'] = this.getEdgeTypeObject(type);
+          }
+        } else {
+          retObject['type']='node';
+          retObject['object'] = this.getNodeTypeObject(type);
+        }
+      }
+      console.log("retObject",retObject);
+      returnTypesArray.push(retObject);
     });
     return returnTypesArray;
   }
@@ -134,29 +159,57 @@ class QueryResultContainer extends Component {
     })
   }
 
-  convertTabularDataIntoNodesAndEdges = (returnNodeArray) => {
+  convertTabularDataIntoNodesAndEdges = (returnTypeArray) => {
     //figure out the return nodes
     let nodes = [];
-    console.log("returnNodeArray",returnNodeArray);
+    let attributeArray = [];
+    let dataArray = [];
+    console.log("returnNodeArray",returnTypeArray);
     let id = 0;
     
     for(let i=0; i<this.props.data[0].length; i++) {
       let start = 0
-      for(let j =0; j<returnNodeArray.length; j++) {
-       let nodeType =returnNodeArray[j];
-        let propertyObject = {};
-        for(let k=0; k<nodeType.table.columns.length; k++) {
-          propertyObject[nodeType.table.columns[k]] = this.props.data[start+k][i];
-        }
-        let newNodeObject = this.createNodeObject(id, nodeType, propertyObject, this.props.data[start][i], nodes)
-        console.log("newNodeObject",newNodeObject);
-        if(newNodeObject.id==id) {
-          nodes.push(newNodeObject)
-          id ++;
-        }
-        start = nodeType.table.columns.length;
+      let data = [];
+      for(let j =0; j<returnTypeArray.length; j++) {
+          let type =returnTypeArray[j];
+          if(type.type == "property") {
+            data.push(this.props.data[start][i])
+            start++
+          } else if(type.type == 'node') {
+            let propertyObject = {};
+            let nodeType = type.object;
+            console.log("nodeType",nodeType);
+            for(let k=0; k<nodeType.table.columns.length; k++) {
+              propertyObject[this.props.columns[start+k]] = this.props.data[start+k][i];
+            }
+            console.log("propertyObject", propertyObject);
+            data.push(JSON.stringify(propertyObject));
+            let newNodeObject = this.createNodeObject(id, nodeType, propertyObject, this.props.data[start][i], nodes)
+            console.log("newNodeObject",newNodeObject);
+            if(newNodeObject.id==id) {
+              nodes.push(newNodeObject)
+              id ++;
+            }
+            start =start + nodeType.table.columns.length;
+          }
+          else {
+            //Handle EDGE
+            let edgeType = type.object;
+          }
+          
       }
+      console.log("data", data);
+      dataArray.push(data);
     }
+    for(let j =0; j<returnTypeArray.length; j++) {
+      attributeArray.push(returnTypeArray[j].name);
+    }
+
+    console.log("dataArray",dataArray);
+    console.log("attributeArray",attributeArray);
+
+    this.setTableAttributes(attributeArray);
+    this.setTableData(dataArray);
     this.setState({
       nodes: nodes
     })
@@ -165,10 +218,11 @@ class QueryResultContainer extends Component {
 
   getTableDataAndAttributes() {
     let returnVarArray = this.getReturnVarsAndTypes();
+    console.log("returnVarArray",returnVarArray);
     if(returnVarArray.length==0) { //no node or edge used in the query
       this.setTableDataFromDataArray();
     } else { //node and/ßor edge var present;
-
+      this.convertTabularDataIntoNodesAndEdges(returnVarArray);
     }
   }
 
@@ -193,7 +247,7 @@ class QueryResultContainer extends Component {
     }
     this.resetVars();
     this.prepareNodePkHash ();
-    this.convertTabularDataIntoNodesAndEdges();
+    this.getTableDataAndAttributes();
   }
 
   componentDidMount() {
@@ -202,10 +256,10 @@ class QueryResultContainer extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    this.init();
     if(prevProps != this.props) {
-      this.setTableDataFromDataArray()
+      this.init();
     }
+   
   }
 
   render() {
@@ -232,11 +286,11 @@ class QueryResultContainer extends Component {
                   </thead>
                   <tbody>
                 
-                    {this.state.tableData.map((data) => (
+                    {this.state.tableData.map((_,i) => (
                       <tr>
-                        {data.map((value) => (
+                        {this.state.tableAttributes.map((_, j) => (
                           
-                          <td >{value}</td>
+                          <td >{this.state.tableData[i][j]}</td>
                           ))
                         }
                       </tr>
