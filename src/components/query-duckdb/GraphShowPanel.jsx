@@ -289,13 +289,7 @@ import * as d3 from 'd3';
           .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : 'url(#start-arrow)')
           .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : 'url(#end-arrow)')
           .on('mousedown', (event, d) => {
-            if (event.ctrlKey) return;
-    
-            // select link
-            this.mousedownLink = d;
-            this.selectedLink = (this.mousedownLink === this.selectedLink) ? null : this.mousedownLink;
-            this.selectedNode = null;
-            this.restart();
+            
           }).merge(this.path);
 
           this.labels = this.labels.data(this.links);
@@ -374,36 +368,35 @@ import * as d3 from 'd3';
           .style('stroke', (d) => d3.rgb(this.colors(d.id)).darker().toString())
           .classed('reflexive', (d) => d.reflexive)
           .on('mouseover', (event, d) => {
-            if (!this.mousedownNode || d === this.mousedownNode) return;
-            // enlarge target node
-            this.edgeDraw = true;
-            d3.select(event.currentTarget).attr('transform', 'scale(1.1)');
+            // if (!this.mousedownNode || d === this.mousedownNode) return;
+            // // enlarge target node
+            // this.edgeDraw = true;
+            // d3.select(event.currentTarget).attr('transform', 'scale(1.1)');
           })
           .on('mouseout', (event, d) => {
             // if (!this.mousedownNode || d === this.mousedownNode) return;
-            if (!this.mousedownNode) return;
-            // unenlarge target node
-            this.edgeDraw = true;
-            d3.select(event?.currentTarget).attr('transform', '');
+            // if (!this.mousedownNode) return;
+            // // unenlarge target node
+            // this.edgeDraw = true;
+            // d3.select(event?.currentTarget).attr('transform', '');
           })
           .on('mousedown', (event, d) => {
-            if (event.ctrlKey) return;
+            // if (event.ctrlKey) return;
     
-            // select node
-            this.mousedownNode = d;
-            this.selectedNode = (this.mousedownNode === this.selectedNode) ? null : this.mousedownNode;
-            this.selectedLink = null;
-            this.edgeDraw = false;
-            // reposition drag line
-            this.dragLine
-              .style('marker-end', 'url(#end-arrow)')
-              .classed('hidden', false)
-              .attr('d', `M${this.mousedownNode.x},${this.mousedownNode.y}L${this.mousedownNode.x},${this.mousedownNode.y}`);
+            // // select node
+            // this.mousedownNode = d;
+            // this.selectedNode = (this.mousedownNode === this.selectedNode) ? null : this.mousedownNode;
+            // this.selectedLink = null;
+            // this.edgeDraw = false;
+            // // reposition drag line
+            // this.dragLine
+            //   .style('marker-end', 'url(#end-arrow)')
+            //   .classed('hidden', false)
+            //   .attr('d', `M${this.mousedownNode.x},${this.mousedownNode.y}L${this.mousedownNode.x},${this.mousedownNode.y}`);
     
-            this.restart();
+            // this.restart();
           })
           .on('mouseup', (event, d) => {
-            if (!this.mousedownNode || !this.edgeDraw) return;
     
             // needed by FF
             this.dragLine
@@ -426,8 +419,6 @@ import * as d3 from 'd3';
             // const source = this.mouseupNode ;
             // const target = this.mousedownNode;
             // const isRight = true;
-
-            this.props.addEdge(this.mousedownNode, this.mouseupNode)
     
             // let link = this.links.filter((l) => l.source === source && l.target === target)[0];
             // if (link) {

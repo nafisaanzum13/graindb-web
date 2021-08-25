@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import LeftPanel from "./LeftPanel";
 import MappingPanel from "./MappingPanel";
 import GrqlMain from "./query-duckdb/GrqlMain";
-import ls from 'local-storage';
 import axios from "axios";
 
 
@@ -24,6 +23,7 @@ class Dashboard extends Component {
     };
   }
   baseURL = "http://localhost:8080/http://localhost:1294/"
+  
   componentDidMount() {
     
     let headers = new Headers();
@@ -55,9 +55,13 @@ class Dashboard extends Component {
           });
         }
       )
-    
-
-    ls.set("tableList",this.state.tables);
+      if (localStorage.getItem('graph')) {
+        console.log("localStorage.getItem('graph')",localStorage.getItem('graph'));
+        this.setState({
+          graph: JSON.parse(localStorage.getItem('graph'))
+        })
+      }
+      
   }
 
   getTableInfo = (index, tableName) => {
@@ -86,6 +90,7 @@ class Dashboard extends Component {
   onChangeGraph = (newNode, newLink) => {
     if(newNode != null) this.state.graph.nodes.push(newNode);
     if(newLink != null) this.state.graph.links.push(newLink);
+    localStorage.setItem('graph', JSON.stringify(this.state.graph)) ;
     this.setState(prevState => ({
       graph: this.state.graph
     }));

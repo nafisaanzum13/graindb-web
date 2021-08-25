@@ -22,6 +22,8 @@ class DrawingPanel extends Component {
     }
   }
   baseURL = "http://localhost:8080/http://localhost:1294/";
+
+  colors = ['#E03E1A', '#4566F7', '#72DB42', '#6EB1E0', '#16F2B0'];
   handleClose = () => {
     this.setState({
       showNodeModal: false
@@ -62,7 +64,8 @@ class DrawingPanel extends Component {
     return {
       id: id,
       name: name,
-      table: table
+      table: table,
+      color: this.colors[id]
     }
   }
 
