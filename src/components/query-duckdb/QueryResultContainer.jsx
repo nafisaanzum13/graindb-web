@@ -8,7 +8,9 @@ class QueryResultContainer extends Component {
     this.state ={
       activeTab : 0,
       nodes:[],
-      links:[]
+      links:[],
+      tableAttributes:[],
+      tableData : []
     };
     this.handleSelect = this.handleSelect.bind(this);
   }
@@ -83,31 +85,58 @@ class QueryResultContainer extends Component {
     }
     return nodeAndVar;
   }
+  getEdgeTypeAndVarNamesFromQuery = () => {
+    let edgeAndVar = {}; //Contains node type name and variable used in the query e.g. (n, vPerson), n=variable, vPerson= nodeTypeName
+    var regex = /\[(.*?)\]/g;
+    var m;
+    while(m= regex.exec(this.props.query.toLowerCase())) {
+      let edgeAndVarSplit = m[1].split(":")
+      edgeAndVar[edgeAndVarSplit[0].trim()] = edgeAndVarSplit[1].trim();
+    }
+    return edgeAndVar;
+  }
+  
 
-  getReturnNodesAndTypes = () => {
-    let returnNodeTypesArray = [];
+  getReturnVarsAndTypes = () => {
+    let returnTypesArray = [];
     let nodeTypeAndVarNameObjects = this.getNodeTypeAndVarNamesFromQuery();
+    let edgeTypeAndVarNameObjects = this.getEdgeTypeAndVarNamesFromQuery();
+
+    if(nodeTypeAndVarNameObjects=={} && edgeTypeAndVarNameObjects=={}) {
+      return returnTypesArray;
+    }
+    //At least one node and edge query
     
     let returnString = this.props.query.toLowerCase().match(/select(.*)from/)[1];
     let words = returnString.split(',');
     words.forEach(word => { 
       let elem = word.trim();
       console.log("elem",elem);
-      console.log("nodeTypeAndVarNameObjects[elem]: ",nodeTypeAndVarNameObjects[elem]);
       console.log("elem elem.split('.').length: ",elem.split('.').length);
       if(elem.split('.').length==1) {
         let nodeTypeNode = this.getNodeTypeObject(nodeTypeAndVarNameObjects[elem]);
         console.log("nodeTypeNode",nodeTypeNode);
-        returnNodeTypesArray.push(nodeTypeNode);
+        returnTypesArray.push(nodeTypeNode);
       }
     });
-    return returnNodeTypesArray;
+    return returnTypesArray;
   }
 
-  convertTabularDataIntoNodesAndEdges = () => {
+  setTableAttributes(attributes) {
+    this.setState({
+      tableAttributes: attributes
+    })
+  }
+
+  setTableData(dataArray) {
+    this.setState({
+      tableData: dataArray
+    })
+  }
+
+  convertTabularDataIntoNodesAndEdges = (returnNodeArray) => {
     //figure out the return nodes
     let nodes = [];
-    let returnNodeArray = this.getReturnNodesAndTypes();
     console.log("returnNodeArray",returnNodeArray);
     let id = 0;
     
@@ -134,19 +163,48 @@ class QueryResultContainer extends Component {
 
   }
 
-  componentDidMount() {
-    if(this.props.graph.nodes.length==0 || this.props.query.length==0 || this.props.data.length==0) return;
+  getTableDataAndAttributes() {
+    let returnVarArray = this.getReturnVarsAndTypes();
+    if(returnVarArray.length==0) { //no node or edge used in the query
+      this.setTableDataFromDataArray();
+    } else { //node and/ßor edge var present;
+
+    }
+  }
+
+  setTableDataFromDataArray() {
+    let dataArray = [];
+    if(!this.props.data[0] || this.props.data[0].length==0) return;
+
+    for(let i=0;i<this.props.data[0].length; i++) {
+      let values = [];
+      for(let j=0; j<this.props.data.length; j++) {
+        values.push(this.props.data[j][i]);
+      }
+      dataArray.push(values)
+    }
+    this.setTableAttributes(this.props.columns);
+    this.setTableData(dataArray);
+  }
+
+  init() {
+    if(this.props.graph.nodes.length==0 || this.props.query.length==0 || this.props.data.length==0) {
+      return;
+    }
     this.resetVars();
     this.prepareNodePkHash ();
     this.convertTabularDataIntoNodesAndEdges();
   }
 
+  componentDidMount() {
+    if(this.props.columns.length>0) this.setTableDataFromDataArray();
+    this.init();
+  }
+
   componentDidUpdate(prevProps, prevState) {
-    if(this.props.graph.nodes.length==0 || this.props.query.length==0 && this.props.data.length==0) return;
+    this.init();
     if(prevProps != this.props) {
-      this.resetVars();
-      this.prepareNodePkHash ();
-      this.convertTabularDataIntoNodesAndEdges();
+      this.setTableDataFromDataArray()
     }
   }
 
@@ -167,22 +225,22 @@ class QueryResultContainer extends Component {
                 <Table className="table-sm" responsive="sm" striped bordered hover >
                   <thead>
                     <tr>
-                      {this.props.columns.map(column => (
+                      {this.state.tableAttributes.map(column => (
                         <th> {column} </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                 
-                    {this.props.data[0]? this.props.data[0].map((_, i) => (
+                    {this.state.tableData.map((data) => (
                       <tr>
-                        {this.props.data.map((_, j) => (
+                        {data.map((value) => (
                           
-                          <td >{this.props.data[j][i]}</td>
+                          <td >{value}</td>
                           ))
                         }
                       </tr>
-                    )) : null} 
+                    ))}
                     
                   </tbody>
                 </Table>
