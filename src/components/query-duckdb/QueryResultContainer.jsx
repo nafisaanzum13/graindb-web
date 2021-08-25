@@ -25,7 +25,7 @@ class QueryResultContainer extends Component {
 
   resetVars () {
     this.nodePkHash = {}
-    this.state ={
+    this.state = {
       nodes:[],
       links:[],
       dataArray: [],
@@ -208,8 +208,8 @@ class QueryResultContainer extends Component {
       if(nodesForEdges.length>1) {
         let newLink ={ 
           id: links.length, 
-          source: nodesForEdges[0], 
-          target: nodesForEdges[1], 
+          source: nodesForEdges[0].id, 
+          target: nodesForEdges[1].id, 
           left : false, 
           right : true
         };
@@ -290,13 +290,12 @@ class QueryResultContainer extends Component {
   render() {
     let graphDiv =null;
     console.log("nodes", this.state.nodes);
-    if(this.state.activeTab ==1) graphDiv=<GraphShowPanel nodes={this.state.nodes} links={this.state.links} />
+    graphDiv=<GraphShowPanel nodes={this.state.nodes} links={this.state.links} />
     return (
       <>
         <p className="logo-color">QUERY: {this.props.query}</p>
         <Tabs
-              defaultActiveKey={this.state.activeTab} 
-              onSelect={this.handleSelect}
+              defaultActiveKey={0} 
               className="sm-1"
             >
               <Tab eventKey={0}  title={<i class='fa fa-table'></i>}>

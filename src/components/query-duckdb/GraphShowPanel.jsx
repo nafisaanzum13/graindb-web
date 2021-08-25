@@ -2,260 +2,353 @@ import React, { Component } from "react";
 import ReactDOM from 'react-dom'
 import * as d3 from 'd3';
 
+  class GraphShowPanel extends Component {
+    
+  svgRef= React.RefObject;
+  dataset = [];
+  width = 600;
+  height = 500;
+  
+  radius = 20
+  svg;
 
-var FORCE = (function(nsp){
-  
-    var 
-    width = 600,
-    height = 550,
-    selectedNode = null,
-    initForce = (nodes, links) => {
-      nsp.force = d3.forceSimulation(nodes)
-        .force("charge", d3.forceManyBody().strength(-200))
-        .force("link", d3.forceLink(links).distance(70))
-        .force("center", d3.forceCenter().x(nsp.width /2).y(nsp.height / 2))
-        .force("collide", d3.forceCollide([5]).iterations([5]));
-    },
-  
-    enterNode = (selection) => {
-      var circle = selection.select('circle')
-        .attr("r", 25)
-        .style("fill", 'tomato' ) 
-        .style("stroke", "bisque")
-        .style("stroke-width", "3px")
-        // .on('contextmenu', this.rightClick)
-  
-      selection.select('text')
-        .style("fill",  (d) => d.type.color)
-        .style("font-weight", "100")
-        .style("text-transform", "uppercase")
-        .style("text-anchor", "middle")
-        .style("alignment-baseline", "middle")
-        .style("font-size", "10px")
-        .style("font-family", "cursive")
+  nodes = [];
+  lastNodeId = 0;
+  links =[];
+  force;
+  drag;
+  dragLine;
+  path;
+  circle;
+  labels;
 
-        
-        
-        selection.on("mousemove", d=> {
-            selectedNode = d.data;
-            console.log("mousedown", selectedNode);
-        });
-      },
-      
-    rightClick= (selection) => {
-        console.log("right click on node: ", selection);
-    },
-    updateNode = (selection) => {
-      selection
-        .attr("transform", (d) => "translate(" + d.x + "," + d.y + ")")
-        .attr("cx", function(d) { return d.x = Math.max(30, Math.min(width - 30, d.x)); })
-        .attr("cy", function(d) { return d.y = Math.max(30, Math.min(height - 30, d.y)); })
-      },
-  
-    enterLink = (selection) => {
-      selection
-        .attr("stroke-width", 3)
-        .attr("stroke","bisque")
-    },
-  
-    updateLink = (selection) => {
-      selection
-        .attr("x1", (d) => d.source.x)
-        .attr("y1", (d) => d.source.y)
-        .attr("x2", (d) => d.target.x)
-        .attr("y2", (d) => d.target.y);
-    },
-  
-    updateGraph = (selection) => {
-      selection.selectAll('.node')
-        .call(updateNode)
-      selection.selectAll('.link')
-        .call(updateLink);
-    },
-  
-    dragStarted = (event, d) => {
-      if (!event.active) nsp.force.alphaTarget(0.3).restart();
-      d.fx = d.x;
-      d.fy = d.y
-    },
-  
-    dragging = (event, d) => {
-      d.fx = event.x;
-      d.fy = event.y
-    },
-        
-    dragEnded = (event, d) => {
-      if (!event.active) nsp.force.alphaTarget(0);
-        d.fx = null;
-        d.fy = null
-    },
-  
-    drag = () => d3.selectAll('g.node')
-      .call(d3.drag()
-        .on("start", dragStarted)
-        .on("drag", dragging)
-        .on("end", dragEnded)
-    ),
-  
-    tick = (that) => {
-      that.d3Graph = d3.select(ReactDOM.findDOMNode(that));
-      nsp.force.on('tick', () => {
-        that.d3Graph.call(updateGraph)
-      });
-    };
-    
-    nsp.width = width;
-    nsp.height = height;
-    nsp.enterNode = enterNode;
-    nsp.updateNode = updateNode;
-    nsp.enterLink = enterLink;
-    nsp.updateLink = updateLink;
-    nsp.updateGraph = updateGraph;
-    nsp.initForce = initForce;
-    nsp.dragStarted = dragStarted;
-    nsp.dragging = dragging;
-    nsp.dragEnded = dragEnded;
-    nsp.drag = drag;
-    nsp.tick = tick;
-nsp.contextMenu = rightClick
-    
-    return nsp
-    
-  })(FORCE || {})
-  
-  ////////////////////////////////////////////////////////////////////////////
-  /////// class App is the parent component of Link and Node
-  ////////////////////////////////////////////////////////////////////////////
-  
-  class GraphPanel extends Component {
+  // mouse event vars
+  selectedNode= null;
+  selectedLink= null;
+  mousedownLink= null;
+  mousedownNode= null;
+  mouseupNode= null;
+
+
+  // only respond once per keydown
+  lastKeyDown = -1;
     constructor(props){
       super(props)
       this.state = {
         addLinkArray: [], 
         name: "",
       }
-      this.handleAddNode = this.handleAddNode.bind(this)
-      this.addNode = this.addNode.bind(this)
+      this.svgRef = React.createRef();
+      
     }
-    
-      componentDidMount() {
-          const data = this.props;
-              FORCE.initForce(data.nodes, data.links)
-                  FORCE.tick(this)
-                  FORCE.drag()
-                  FORCE.contextMenu();
-        // const node =d3.select(ReactDOM.findDOM(this))
-        //           .selecttAll("circle");
-        //     node.on()
 
-      }
-  
-      componentDidUpdate(prevProps, prevState) {
-          if (prevProps.nodes !== this.props.nodes || prevProps.links !== this.props.links) {
-              const data = this.props;
-                  FORCE.initForce(data.nodes, data.links)
-                  FORCE.tick(this)
-                  FORCE.drag()
-                  FORCE.contextMenu();
-          }
-      }
-    
-    handleAddNode(e) {
-          this.setState({ [e.target.name]: e.target.value });
-      }
-    
-    addNode(e) {
-          e.preventDefault();
-          this.setState(prevState => ({
-              nodes: [...prevState.nodes, { name:this.state.name, id: prevState.nodes.length + 1,}], name: ''
-          }));
-      }
+    componentDidMount(){
+      this.initializeData();
+      this.initialize();
+    }
 
-   
-      render() {
-          var links = this.props.links.map( (link) => {
-              return (
-                  <Link
-                      key={link.id}
-                      data={link}
-                  />);
+    initialize() {
+        
+        this.svg = d3.select(this.svgRef.current)
+          .append("svg")
+          .attr("width", this.width)
+          .attr("height", this.height)
+          .on('contextmenu', (event, d) => { event.preventDefault(); })
+    
+        // set up initial nodes and links
+        //  - nodes are known by 'id', not by index in array.
+        //  - reflexive edges are indicated on the node (as a bold black circle).
+       
+        // this.nodes = this.props.nodes;
+        // this.links = this.props.links;
+        this.lastNodeId = 2;
+
+        // init D3 force layout
+        this.force = d3.forceSimulation()
+          .force('link', d3.forceLink().id((d) => d.id).distance(150))
+          .force('charge', d3.forceManyBody().strength(-500))
+          .force('x', d3.forceX(this.width / 2))
+          .force('y', d3.forceY(this.height / 2))
+          .on('tick', () => this.tick());
+    
+        // init D3 drag support
+        this.drag = d3.drag()
+          .filter((event, d) => event.button === 0 || event.button === 2)
+          .on('start', (event, d) => {
+            if (!event.active) this.force.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+          })
+          .on('drag', (event, d) => {
+            d.fx = event.x;
+            d.fy = event.y;
+          })
+          .on('end', (event, d) => {
+            if (!event.active) this.force.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
           });
-          var nodes = this.props.nodes.map( (node) => {
-                return (
-                <Node
-                    data={node}
-                    name={node.properties[0]}
-                    key={node.id}
-                    color={node.type.color}
-                />);
-            });
+        // define arrow markers for graph links
+        this.svg.append('svg:defs').append('svg:marker')
+          .data(['start'])
+          .enter().append("svg:marker") 
+          .attr('id', 'start-arrow')
+          .attr('viewBox', '0 -5 10 10')
+          .attr('refX', 0)
+          .attr('markerWidth', 10)
+          .attr('markerHeight', 10)
+          .attr('orient', 'auto')
+          .append('svg:path')
+          .attr('d', 'M0,-5L10,0L0,5')
+          .attr('fill', '#000');
+    
+          this.svg.append("svg:defs").selectAll("marker")
+          .data(['end'])
+          .enter().append("svg:marker") 
+          .attr("id", "end-arrow")
+          .attr("viewBox", "0 -5 10 10")
+          .attr("refX", 0)
+          .attr("markerWidth", 10)
+          .attr("markerHeight", 10)
+          .attr("orient", "auto")
+          .append("svg:path")
+          .attr("d", "M0,-5L10,0L0,5")
+          .attr("fill", "#000");
+    
+        // line displayed when dragging new nodes
+        this.dragLine = this.svg.append('svg:path')
+          .attr('class', 'link dragline')
+          .attr('d', 'M0,0L0,0'); //TODO: fix this
+    
+        // handles to link and node element groups
+        this.path = this.svg.append('svg:g').selectAll('path')
+        .append("link")
+        .attr("stroke", "#aaa")
+        .attr("stroke-width", "1px")
+        .attr("marker-end","url(#end-arrow)");
+
+        this.circle = this.svg.append('svg:g').selectAll('g');
+
+        this.labels = this.svg.append('svg:g').selectAll('path');
+    
+        // app starts here
+        // this.svg.on('mousedown', (event, d) => this.mousedown(event, d))
+        // //   .on('mousemove', (event, d) => this.mousemove(event, d))
+        //   .on('mouseup', (event, d) => this.mouseup(event, d));
+
+        this.restart();
+      }
+
+      
+
+      initializeData() {
+        let idHash = [];
+        let nodes = this.props.nodes;
+        let links = this.props.links;
+        console.log("nodes", nodes);
+        console.log("links", links);
+        this.nodes = [];
+        this.links = [];
+        nodes.forEach(node => {
+          this.nodes.push(node);
+          idHash[this.nodes[this.nodes.length-1].id]=this.nodes[this.nodes.length-1];
+        });
+
+        links.forEach(link => {
+          this.links.push({id: link.id, source:idHash[link.source], target:idHash[link.target], left: false, right: true});
+        });
+        console.log("this.nodes", this.nodes);
+        console.log("this.links", this.links);
+      }
+
+      emptyData() {
+        this.nodes = [];
+        this.links = [];
+        this.restart();
+      }
+    
+      componentDidUpdate(prevProps, prevState) {
+        if (prevProps.nodes !== this.props.nodes || prevProps.links !== this.props.links) {
+            // this.nodes = this.props.nodes;
+            // this.links = this.props.links;
+            this.emptyData();
+            this.initializeData();
+            this.restart()
+        }
+        this.restart();
+      }
+
+      restart = () => {
+
+        // circle (node) group
+        // NB: the function arg is crucial here! nodes are known by id, not by index!
+        this.circle = this.circle.data(this.nodes, (d) => d.id);
+        
+
+        // update existing nodes (reflexive & selected visual states)
+        this.circle.selectAll('circle')
+          .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(d.type.color).brighter().toString() : d.type.color)
+          .classed('reflexive', (d) => d.reflexive);
+    
+        // remove old nodes
+        this.circle.exit().remove();
+    
+        // add new nodes
+        const g = this.circle.enter().append('svg:g');
+        g.append('svg:circle')
+          .attr('class', 'node')
+          .attr('r', this.radius)
+          .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(d.type.color).brighter().toString() : d.type.color)
+          .style('stroke', (d) => d3.rgb(d.type.color).darker().toString())
+          .classed('reflexive', (d) => d.reflexive)
+          .call(this.drag)
+          
+    
+        // show node IDs
+        g.append('svg:text')
+          .attr('x', 0)
+          .attr('y', 4)
+          // .attr('class', 'id')
+          .text((d) => d.pk);
+    
+        this.circle = g.merge(this.circle);
+
+        // path (link) group
+        this.svg.append("svg:defs").append("svg:marker")
+          .attr("id", "end-arrow")
+          .attr("viewBox", "0 -5 10 10")
+          .attr("refX", 10)
+          .attr("markerWidth", 10)
+          .attr("markerHeight", 10)
+          .attr("orient", "auto")
+          .append("svg:path")
+          .attr("d", "M0,-5L10,0L0,5")
+          .attr("fill", "#000");
+
+        this.path = this.path.data(this.links);
+        // update existing links
+        this.path.classed('selected', (d) => d === this.selectedLink)
+          .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
+          .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '');
+    
+        // remove old links
+        this.path.exit().remove();
+    
+        // add new links
+        this.path = this.path.enter().append('svg:path')
+          .attr('class', 'link')
+          .classed('selected', (d) => d === this.selectedLink)
+          // .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : 'url(#start-arrow)')
+          .style('marker-end','#url(end-arrow)' )
+          .merge(this.path);
+
+          this.labels = this.labels.data(this.links);
+          this.labels.exit().remove();
+
+          this.labels = this.labels.enter().append('svg:text')
+          .attr("x", (d) => ((d.source.x + d.target.x)/2))
+            .attr("y",  (d) => ((d.source. y+ d.target.y)/2))
+          .text("label").merge(this.path)
+
+          this.path = this.path.merge(this.path);
+          
+    
+        
+        // this.linkLabels = g.merge(this.linkLabels);
+        
+        // set the graph in motion
+        this.force
+            .nodes(this.nodes)
+            .force('link').links(this.links);
+      
+          this.force.alphaTarget(0.3).restart();
+        
+      }
+      render() {
           return (
-            <div className="graph__container">
-              <svg className="graph" width="100%" height={FORCE.height}>
-                  <g>
-                      {links}
-                  </g>
-                  <g>
-                      {nodes}
-                  </g>
-              </svg>
-            </div>
+            <div ref={this.svgRef}> </div>
           );
       }
-  }
-  
-  export default GraphPanel;
-  ///////////////////////////////////////////////////////////
-  /////// Link component
-  ///////////////////////////////////////////////////////////
-  
-  class Link extends Component {
-  
-      componentDidMount() {
-        this.d3Link = d3.select(ReactDOM.findDOMNode(this))
-          .datum(this.props.data)
-          .call(FORCE.enterLink);
+
+      resetMouseVars() {
+        this.mousedownNode = null;
+        this.mouseupNode = null;
+        this.mousedownLink = null;
+      }
+
+      mousedown(event, d) {
+        // because :active only works in WebKit?
+        this.svg.classed('active', event.currentTarget);
       }
     
-      componentDidUpdate() {
-        this.d3Link.datum(this.props.data)
-          .call(FORCE.updateLink);
+      mousemove(event, d) {
+        if (!this.mousedownNode) return;
+        // update drag line
+        this.dragLine.attr('d', `M${this.mousedownNode.x},${this.mousedownNode.y}L${d3.pointer(event)[0]},${d3.pointer(event)[1]}`);
       }
-  
-      render() {
-        return (
-          <line className='link' />
-        );
+    
+      mouseup(event, d) {
+        if (this.mousedownNode) {
+          // hide drag line
+          this.dragLine
+            .classed('', event.currentTarget)
+            .style('marker-end', '');
+        }
+    
+        // because :active only works in WebKit?
+        this.svg.classed('active', false);
+    
+        // clear mouse event vars
+        this.resetMouseVars();
       }
+    
+      spliceLinksForNode(node) {
+        const toSplice = this.links.filter((l) => l.source === node || l.target === node);
+        for (const l of toSplice) {
+          this.links.splice(this.links.indexOf(l), 1);
+        }
+      }
+
+  tick() {
+    this.initializeData();
+    // console.log("Graph edges ", this.links);
+    this.circle.attr('transform', (d) => `translate(${d.x},${d.y})`);
+    // draw directed edges with proper padding from node centers
+    this.path.attr('d', (d) => {
+      const deltaX = d.target.x - d.source.x;
+      const deltaY = d.target.y - d.source.y;
+      const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const normX = deltaX / dist;
+      const normY = deltaY / dist;
+      const sourcePadding = d.left ? 17 : 12;
+      const targetPadding = d.right ? 17 : 12;
+      const sourceX = d.source.x + (sourcePadding * normX);
+      const sourceY = d.source.y + (sourcePadding * normY);
+      const targetX = d.target.x - (targetPadding * normX);
+      const targetY = d.target.y - (targetPadding * normY);
+
+      return `M${sourceX},${sourceY}L${targetX},${targetY}`;
+    });
+    // this.labels
+    //       .attr("x", (d) => ((d.source.x + d.target.x)/2))
+    //         .attr("y",  (d) => ((d.source. y+ d.target.y)/2));
+          
+    this.labels.attr("x", function(d) {
+      const sourceDx = Math.max(this.radius, Math.min(this.width - this.radius, d.source.x));
+
+      const targetDx = Math.max(this.radius, Math.min(this.width - this.radius, d.target.x));
+      return ((sourceDx + targetDx) / 2);
+      // return ((d.source.x + d.target.x) / 2);
+    })
+    .attr("y", function(d) {
+      const sourceDy = Math.max(this.radius, Math.min(this.height - this.radius, d.source.y));
+      const targetDy = Math.max(this.radius, Math.min(this.height - this.radius, d.target.y));
+      return ((sourceDy + targetDy) / 2);
+      // return ((d.source.y + d.target.y) / 2);
+    });
+
+   
+  }
   }
   
-  ///////////////////////////////////////////////////////////
-  /////// Node component
-  ///////////////////////////////////////////////////////////
-  
-  class Node extends Component {
-  
-      componentDidMount() {
-        this.d3Node = d3.select(ReactDOM.findDOMNode(this))
-          .datum(this.props.data)
-          .call(FORCE.enterNode)
-        this.d3Node.on("mousemove", d=> {
-            FORCE.selectedNode = this.d3Node.id;
-            console.log("mousedown", FORCE.selectedNode);
-        });
-      }
-  
-      componentDidUpdate() {
-        this.d3Node.datum(this.props.data)
-          .call(FORCE.updateNode)
-      }
-  
-      render() {
-        return (
-          <g className='node'>
-            <circle/>
-            <text>{this.props.data.name}</text>
-          </g>
-        );
-      }
-  }
+  export default GraphShowPanel;
