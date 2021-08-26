@@ -127,10 +127,10 @@ class QueryResultContainer extends Component {
         type: "",
         object: {}
       }
-      if(splits.length>1 && splits[1] != "*") {
+      if(splits.length>1 && (!splits[1].includes("*") || splits[1].includes(" "))) {
         retObject['type'] = "property";
       } else {
-        if(splits.length>1 && splits[1] != "*") {
+        if(splits.length>1 && splits[1] == "*") {
           
           elem = splits[0];
         }
@@ -138,7 +138,8 @@ class QueryResultContainer extends Component {
         if(type === undefined) {
           type = edgeTypeAndVarNameObjects[elem];
           if(type === undefined) {
-            alert('Error: return type is neither node or edge!');
+            this.setTableDataFromDataArray();
+            console.log('Error: return type is neither node or edge!');
             return;
           } else {
             retObject['type']='edge';
@@ -189,6 +190,10 @@ class QueryResultContainer extends Component {
             let propertyObject = {};
             let nodeType = type.object;
             console.log("nodeType",nodeType);
+            console.log("this.props.columns",this.props.columns);
+            console.log("this.props.data[start]",this.props.data[start]);
+            console.log("start",start);
+            console.log("i",i);
             for(let k=0; k<nodeType.table.columns.length; k++) {
               propertyObject[this.props.columns[start+k]] = this.props.data[start+k][i];
             }
@@ -269,6 +274,7 @@ class QueryResultContainer extends Component {
 
   init() {
     if(this.props.graph.nodes.length==0 || this.props.query.length==0 || this.props.data.length==0) {
+      if(this.props.data.length>0) this.setTableDataFromDataArray();
       return;
     }
     this.resetVars();
@@ -289,6 +295,7 @@ class QueryResultContainer extends Component {
       console.log("prop changed!", this.props.data)
 
       this.resetVars();
+      // this.setTableDataFromDataArray();
       this.init();
     }
    

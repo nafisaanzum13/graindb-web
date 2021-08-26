@@ -110,10 +110,10 @@ class Dashboard extends Component {
               id="noanim-tab-example"
               className="mb-3"
             >
-              <Tab eventKey="home" title="Relational to Graph Mapping">
+              <Tab eventKey="home" title="Schema Designer">
                 <MappingPanel tables={this.state.tables} graph={this.state.graph} onChangeGraph={this.onChangeGraph}/>
               </Tab>
-              <Tab eventKey="grql" title="Query GrainDB using GRQL">
+              <Tab eventKey="grql" title="GrainDB Query Interface">
                 <GrqlMain tables={this.state.tables} graph={this.state.graph}  />
               </Tab>
               
