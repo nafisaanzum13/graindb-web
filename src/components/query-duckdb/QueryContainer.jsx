@@ -18,6 +18,7 @@ class QueryContainer extends Component {
     handleClick = () => {
         console.log("in handle click");
         let query = this.state.queryString.replace(/=/g,"%3D");
+        query = query.replace('+', '%2b');
         let queryURL = this.baseURL+"query?q="+query;
         fetch(queryURL, {})
         .then(res  => res.json())

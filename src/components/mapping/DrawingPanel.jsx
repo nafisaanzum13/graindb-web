@@ -130,7 +130,7 @@ class DrawingPanel extends Component {
     "query?q=CREATE EDGE  "+name+" ON "+joinCondition.table.name;
     let fromNodeString = source.name +" REFERENCES "+joinCondition.sourceCOL;
     let toNodeString = target.name +" REFERENCES "+joinCondition.targetCOL;
-    if(isLeft){
+    if(!isLeft){
       queryURL += " ( FROM "+fromNodeString+", TO "+toNodeString+" ); ";
     } else {
       queryURL += " ( FROM "+toNodeString+", TO "+fromNodeString+" ); ";
