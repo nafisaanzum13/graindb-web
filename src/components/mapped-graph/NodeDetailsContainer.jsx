@@ -21,7 +21,7 @@ class NodeDetailsContainer extends Component {
     <div className="col-md-12">
         <div className="list-items row">
             <div className="col-md-10" >
-              {this.props.node.id + 1}. {this.props.node.name}
+              {this.props.node.id + 1}. {this.props.node.name} <span style={{color:this.props.node.color}} className="circle-color"/>
             </div>
             <div className="col-md-1 zero-padding">
               <button className="btn zero-padding" type="button" onClick={this.handleClick} >
@@ -36,7 +36,9 @@ class NodeDetailsContainer extends Component {
               <div className="col-md-12" style={{background: "#128e3a42", fontSize: '0.85rem'}}>
                 Details:<br/>
                 Node Type: {this.props.node.name}<br/>
-                Table: {this.props.node.table.name}
+                Table: {this.props.node.table.name}<br/>
+                Node label attribute: {this.props.node.label}<br/>
+                <span style={{color:this.props.node.color}}>Color Selected: {this.props.node.color}</span>
               </div>
               <hr></hr>
         </div>

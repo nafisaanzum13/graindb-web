@@ -79,6 +79,14 @@ img {
   vertical-align: middle;
 }
 
+.circle-color {
+  background-color: inherit;
+  border: 0.5em solid;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .arrow-right:after {
   content: "";
   display: inline-block !important;
@@ -232,4 +240,9 @@ text.id {
 .menuEntry text {
   font-size: 12px;
   stroke: #00557d;
+}
+
+hr {
+  height: 0px !important;
+  border-top: 1px solid #eef3f091;
 }

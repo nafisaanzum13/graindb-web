@@ -56,7 +56,8 @@ class QueryResultContainer extends Component {
         type: nodeType,
         properties: propertyObject,
         color:"",
-        brightColor:""
+        brightColor:"",
+        label: propertyObject[nodeType.label]
       }
       this.nodePkHash[nodeType.id][pk] = id;
       console.log("newNodeObject",newNodeObject);

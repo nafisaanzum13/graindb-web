@@ -342,7 +342,7 @@ import { createContextMenu } from "./context-menu/ContextMenuFactory";
           .attr('x', 0)
           .attr('y', 4)
           .attr('class', 'id')
-          .text((d) => d.pk);
+          .text((d) => d.label);
     
         this.circle = g.merge(this.circle);
         // this.linkLabels = g.merge(this.linkLabels);

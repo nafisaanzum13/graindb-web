@@ -14,7 +14,8 @@ class DrawingPanel extends Component {
       fromNode: {},
       toNode: {},
       droppedTable: {
-        name:""
+        name:"",
+        columns:[]
       },
       nodes:[],
       links: [],
@@ -72,20 +73,21 @@ class DrawingPanel extends Component {
     ev.preventDefault();
   };
 
-  getNodeObject = (table, id, name) => {
+  getNodeObject = (table, id, name, label) => {
     return {
       id: id,
       name: name,
       table: table,
-      color: this.colors[id]
+      color: this.colors[id],
+      label: label
     }
   }
 
   
 
-  createNodeType = (name) => {
+  createNodeType = (name, attribute) => {
     this.handleClose();
-    let newNode = this.getNodeObject(this.state.droppedTable, this.state.nodes.length, name);
+    let newNode = this.getNodeObject(this.state.droppedTable, this.state.nodes.length, name, attribute);
     console.log("dropped node", newNode);
 
     let queryURL = this.baseURL + "query?q=CREATE VERTEX "+name+" ON "+this.state.droppedTable.name+";";
