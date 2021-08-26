@@ -259,7 +259,11 @@ class QueryResultContainer extends Component {
 
   setTableDataFromDataArray() {
     let dataArray = [];
-    if(!this.props.data[0] || this.props.data[0].length==0) return;
+    if(!this.props.data[0] || this.props.data[0].length==0) {
+      this.setTableAttributes(this.props.columns);
+      this.setTableData(dataArray);
+      return
+    };
 
     for(let i=0;i<this.props.data[0].length; i++) {
       let values = [];
@@ -274,7 +278,7 @@ class QueryResultContainer extends Component {
 
   init() {
     if(this.props.graph.nodes.length==0 || this.props.query.length==0 || this.props.data.length==0) {
-      if(this.props.data.length>0) this.setTableDataFromDataArray();
+      this.setTableDataFromDataArray();
       return;
     }
     this.resetVars();
@@ -305,9 +309,17 @@ class QueryResultContainer extends Component {
     let graphDiv =null;
     console.log("nodes", this.state.nodes);
     graphDiv=<GraphShowPanel nodes={this.state.nodes} links={this.state.links} />
+    let queryDiv = null;
+    if(this.props.query && this.props.query.length>0) {
+      queryDiv = <div><p className="logo-color">QUERY: {this.props.query}</p>  <p>{this.state.tableData.length} rows returned.</p></div> ;
+
+    }
     return (
       <>
-        <p className="logo-color">QUERY: {this.props.query}</p>
+
+       
+       {queryDiv}
+       
         <Tabs
               defaultActiveKey={0} 
               className="sm-1"
