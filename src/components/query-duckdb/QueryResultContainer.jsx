@@ -81,7 +81,7 @@ class QueryResultContainer extends Component {
     var m;
     while(m= regex.exec(this.props.query.toLowerCase())) {
       let nodeAndVarSplit = m[1].split(":")
-      nodeAndVar[nodeAndVarSplit[0].trim()] = nodeAndVarSplit[1].trim();
+      if(nodeAndVarSplit.length>1) nodeAndVar[nodeAndVarSplit[0].trim()] = nodeAndVarSplit[1].trim();
     }
     return nodeAndVar;
   }
@@ -91,7 +91,7 @@ class QueryResultContainer extends Component {
     var m;
     while(m= regex.exec(this.props.query.toLowerCase())) {
       let edgeAndVarSplit = m[1].split(":")
-      edgeAndVar[edgeAndVarSplit[0].trim()] = edgeAndVarSplit[1].trim();
+      if(edgeAndVarSplit.length>1)edgeAndVar[edgeAndVarSplit[0].trim()] = edgeAndVarSplit[1].trim();
     }
     return edgeAndVar;
   }
