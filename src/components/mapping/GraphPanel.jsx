@@ -148,7 +148,7 @@ import * as d3 from 'd3';
         .enter()
         .append("path")
         .attr("stroke", "black")
-        .attr("marker-end", "#end-arrow")
+        .attr("marker-end", "url(#end-arrow)")
         .attr("stroke-width", "2px");;
 
         this.circle = this.svg.append('svg:g').selectAll('g');

@@ -6,9 +6,8 @@ import * as d3 from 'd3';
     
   svgRef= React.RefObject;
   dataset = [];
-  width = 600;
+  width = 700;
   height = 500;
-  
   radius = 20
   svg;
 
@@ -41,10 +40,35 @@ import * as d3 from 'd3';
       this.svgRef = React.createRef();
       
     }
-
-    componentDidMount(){
-      this.initializeData();
+    componentDidMount() {
+      
+      this.nodes = [];
+      this.links = [];
       this.initialize();
+      this.initializeData()
+      this.restart();
+    }
+
+    initializeData() {
+      let idHash = [];
+      let nodes = this.props.nodes;
+      let links = this.props.links;
+      this.nodes = [];
+      this.links = [];
+      nodes.forEach(node => {
+        this.nodes.push(node);
+        idHash[this.nodes[this.nodes.length-1].id]=this.nodes[this.nodes.length-1];
+      });
+
+      links.forEach(link => {
+        this.links.push({id: link.id, source:idHash[link.source], target:idHash[link.target], left: false, right: true});
+      });
+    }
+
+    emptyData() {
+      this.nodes = [];
+      this.links = [];
+      this.restart();
     }
 
     initialize() {
@@ -53,28 +77,10 @@ import * as d3 from 'd3';
           .append("svg")
           .attr("width", this.width)
           .attr("height", this.height)
-
-          this.svg.append("svg:defs").selectAll("marker")
-          .data(["end-arrow"])
-          .enter()
-          .append("svg:marker") 
-          .attr("id", "end-arrow")
-          .attr("viewBox", "0 -5 10 10")
-          .attr("refX", 10)
-          // .attr("markerWidth", 20)
-          // .attr("markerHeight", 20)
-          // .attr("orient", "auto")
-          .append("svg:path")
-          .attr("d", "M0,-5L10,0L0,5")
-          // .attr("fill", "#000");
-          // .on('contextmenu', (event, d) => { event.preventDefault(); })
     
         // set up initial nodes and links
         //  - nodes are known by 'id', not by index in array.
         //  - reflexive edges are indicated on the node (as a bold black circle).
-       
-        // this.nodes = this.props.nodes;
-        // this.links = this.props.links;
         this.lastNodeId = 2;
 
         // init D3 force layout
@@ -108,7 +114,7 @@ import * as d3 from 'd3';
         //   .enter().append("svg:marker") 
         //   .attr('id', 'start-arrow')
         //   .attr('viewBox', '0 -5 10 10')
-        //   .attr('refX', 0)
+        //   .attr('refX', 10)
         //   .attr('markerWidth', 10)
         //   .attr('markerHeight', 10)
         //   .attr('orient', 'auto')
@@ -116,7 +122,19 @@ import * as d3 from 'd3';
         //   .attr('d', 'M0,-5L10,0L0,5')
         //   .attr('fill', '#000');
     
-          
+          this.svg.append("defs").selectAll(".marker")
+          .data(["start-arrow", "end-arrow"])
+          .enter().append("svg:marker")
+          .attr("class","marker")
+          .attr("id", function(d) { return d; })
+          .attr("viewBox", "0 -5 10 10")
+          .attr("refX", 15)
+          .attr("refY", -1.5)
+          .attr("markerWidth", 10)
+          .attr("markerHeight", 10)
+          .attr("orient", "auto")
+          .append('svg:path')
+          .attr("d", "M0,-5L10,0L0,5");
     
         // line displayed when dragging new nodes
         this.dragLine = this.svg.append('svg:path')
@@ -129,7 +147,7 @@ import * as d3 from 'd3';
         .enter()
         .append("path")
         .attr("stroke", "black")
-        .attr("marker-end", "#end-arrow")
+        .attr("marker-end", "url(#end-arrow)")
         .attr("stroke-width", "2px");;
 
         this.circle = this.svg.append('svg:g').selectAll('g');
@@ -144,43 +162,60 @@ import * as d3 from 'd3';
         this.restart();
       }
 
-      
-
-      initializeData() {
-        let idHash = [];
-        let nodes = this.props.nodes;
-        let links = this.props.links;
-        this.nodes = [];
-        this.links = [];
-        nodes.forEach(node => {
-          this.nodes.push(node);
-          idHash[this.nodes[this.nodes.length-1].id]=this.nodes[this.nodes.length-1];
-        });
-
-        links.forEach(link => {
-          this.links.push({id: link.id, source:idHash[link.source], target:idHash[link.target], left: false, right: true});
-        });
-      }
-
-      emptyData() {
-        this.nodes = [];
-        this.links = [];
-        this.restart();
-      }
     
       componentDidUpdate(prevProps, prevState) {
         if (prevProps.nodes !== this.props.nodes || prevProps.links !== this.props.links) {
-            // this.nodes = this.props.nodes;
-            // this.links = this.props.links;
-            this.emptyData();
-            this.initializeData();
-            this.restart()
+          this.emptyData();
+          this.initializeData();
+          this.restart()
         }
         this.restart();
       }
 
       restart = () => {
+        this.path = this.path.data(this.links);
+        // update existing links
+        this.path.classed('selected', (d) => d === this.selectedLink)
+          .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
+          .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '');
+    
+        // remove old links
+        this.path.exit().remove();
+    
+        // add new links
+        this.path = this.path.enter().append('svg:path')
+          .attr('class', 'link')
+          .classed('selected', (d) => d === this.selectedLink)
+          .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : 'url(#start-arrow)')
+          .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : 'url(#end-arrow)')
+          .attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { 
+            return d.target.x;
+          })
+          .attr("y2", function(d) { 
+            return d.target.y;
+          })
+          .merge(this.path);
 
+          this.labels = this.labels.data(this.links);
+          this.labels.exit().remove();
+
+          this.labels = this.labels.enter().append('svg:text').attr('class', 'linklabels')
+          .attr("x", function (d) {
+            if (d.target.id == d.source.id) { return (d.source.x+2); }
+          else if (d.target.x > d.source.x) { return (d.source.x + (d.target.x - d.source.x) / 2); }
+          else { return (d.target.x + (d.source.x - d.target.x) / 2);} 
+          })
+          .attr("y", function (d) {
+              if (d.target.id == d.source.id) { return (d.source.y + d.source.y); }
+              else if (d.target.y > d.source.y) { return (d.source.y + (d.target.y - d.source.y) / 2); }
+              else { return (d.target.y + (d.source.y - d.target.y) / 2); }
+              
+          })
+          .text(function (d) { return d.id}).merge(this.labels)
+          
+    
         // circle (node) group
         // NB: the function arg is crucial here! nodes are known by id, not by index!
         this.circle = this.circle.data(this.nodes, (d) => d.id);
@@ -196,75 +231,94 @@ import * as d3 from 'd3';
     
         // add new nodes
         const g = this.circle.enter().append('svg:g');
+    
         g.append('svg:circle')
           .attr('class', 'node')
           .attr('r', this.radius)
-          .attr('x', (d) =>d.x)
           .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(d.type.color).brighter().toString() : d.type.color)
           .style('stroke', (d) => d3.rgb(d.type.color).darker().toString())
           .classed('reflexive', (d) => d.reflexive)
-          .on('contextmenu', this.rightClick)
           .call(this.drag)
-          
+          .on('contextmenu', this.rightClick)
+         
+          .on('mouseover', (event, d) => {
+            if (!this.mousedownNode || d === this.mousedownNode) return;
+            // enlarge target node
+            this.edgeDraw = true;
+            d3.select(event.currentTarget).attr('transform', 'scale(1.1)');
+          })
+          .on('mouseout', (event, d) => {
+            // if (!this.mousedownNode || d === this.mousedownNode) return;
+            if (!this.mousedownNode) return;
+            // unenlarge target node
+            this.edgeDraw = true;
+            d3.select(event?.currentTarget).attr('transform', '');
+          })
+          .on('mousedown', (event, d) => {
+            if (event.ctrlKey) return;
+    
+            // select node
+            this.mousedownNode = d;
+            this.selectedNode = (this.mousedownNode === this.selectedNode) ? null : this.mousedownNode;
+            this.selectedLink = null;
+            this.edgeDraw = false;
+            // reposition drag line
+            this.dragLine
+              .style('marker-end', 'url(#end-arrow)')
+              .classed('hidden', false)
+              .attr('d', `M${this.mousedownNode.x},${this.mousedownNode.y}L${this.mousedownNode.x},${this.mousedownNode.y}`);
+    
+            this.restart();
+          })
+          .on('mouseup', (event, d) => {
+            if (!this.mousedownNode || !this.edgeDraw) return;
+    
+            // needed by FF
+            this.dragLine
+              .classed('hidden', false)
+              .style('marker-end', '');
+    
+            // check for drag-to-self
+            this.mouseupNode = d;
+            // if (this.mouseupNode === this.mousedownNode) {
+            //   this.resetMouseVars();
+            //   return;
+            // }
+    
+            // unenlarge target node
+            d3.select(event.currentTarget).attr('transform', '');
+    
+            // add link to graph (update if exists)
+            // NB: links are strictly source < target; arrows separately specified by booleans
+            // const isRight = this.mousedownNode.id < this.mouseupNode.id;
+            // const source = this.mouseupNode ;
+            // const target = this.mousedownNode;
+            // const isRight = true;
+
+            this.props.addEdge(this.mousedownNode, this.mouseupNode)
+    
+            // let link = this.links.filter((l) => l.source === source && l.target === target)[0];
+            // if (link) {
+            //   link[isRight ? 'right' : 'left'] = true;
+            // } else {
+            //   this.links.push({ source, target, left: !isRight, right: isRight });
+            // }
+    
+            // select new link
+            // this.selectedLink = link;
+            this.selectedNode = null;
+            this.resetMouseVars();
+            this.restart();
+          });
     
         // show node IDs
         g.append('svg:text')
           .attr('x', 0)
-          .attr('y', 0)
-          // .attr('class', 'id')
+          .attr('y', 4)
+          .attr('class', 'id')
           .text((d) => d.pk);
     
         this.circle = g.merge(this.circle);
-
-        // path (link) group
-        this.svg.append("svg:defs").append("svg:marker")
-          .attr("id", "end-arrow")
-          .attr("viewBox", "0 -5 10 10")
-          .attr("refX", 10)
-          .attr("markerWidth", 20)
-          .attr("markerHeight", 20)
-          .attr("orient", "auto")
-          .append("svg:path")
-          .attr("d", "M0,-5L20,0L0,5")
-          .attr("fill", "#000");
-
-        this.path = this.path.data(this.links);
-
-        // remove old links
-        this.path.exit().remove();
-    
-        // add new links
-        this.path = this.path.enter().append('svg:path')
-          .attr('class', 'link')
-          .classed('selected', (d) => d === this.selectedLink)
-          .attr("marker-end", "#end-arrow")
-          .attr("x1", function (d) { return d.source.x; })
-          .attr("y1", function (d) { return d.source.y; })
-          .attr("x2", function (d) { return d.target.x; })
-          .attr("y2", function (d) { return d.target.y; })
-          // .style('marker-end','#url(end-arrow)')
-          .merge(this.path);
-
-          this.path = this.path.merge(this.path);
-
-          this.labels = this.labels.data(this.links)
-          
-          this.labels.exit().remove();
-
-          this.labels = this.labels.enter().append('svg:text').attr('class', 'linklabels')
-          .attr("font-family", "Arial, Helvetica, sans-serif")
-          .attr("x", function (d) {
-          if (d.target.x > d.source.x) { return (d.source.x + (d.target.x - d.source.x) / 2); }
-          else { return (d.target.x + (d.source.x - d.target.x) / 2); }
-          })
-          .attr("y", function (d) {
-              if (d.target.y > d.source.y) { return (d.source.y + (d.target.y - d.source.y) / 2); }
-              else { return (d.target.y + (d.source.y - d.target.y) / 2); }
-          })
-          .text("label").merge(this.labels)
-          
-          // this.labels = this.path.merge(this.labels)
-        
         // this.linkLabels = g.merge(this.linkLabels);
         
         // set the graph in motion
@@ -286,13 +340,17 @@ import * as d3 from 'd3';
         this.mouseupNode = null;
         this.mousedownLink = null;
       }
-      rightClick() {
-        console.log("context menu");
-      }
 
       mousedown(event, d) {
         // because :active only works in WebKit?
         this.svg.classed('active', event.currentTarget);
+    
+        if (event.ctrlKey || this.mousedownNode || this.mousedownLink) return;
+    
+        // insert new node at point
+        const point = d3.pointer(event);
+    
+        this.restart();
       }
     
       mousemove(event, d) {
@@ -322,6 +380,7 @@ import * as d3 from 'd3';
           this.links.splice(this.links.indexOf(l), 1);
         }
       }
+  
 
   tick() {
     this.initializeData();
@@ -334,37 +393,69 @@ import * as d3 from 'd3';
       const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
       const normX = deltaX / dist;
       const normY = deltaY / dist;
-      const sourcePadding = d.left ? 17 : 12;
-      const targetPadding = d.right ? 17 : 12;
+      const sourcePadding = this.radius+5;
+      const targetPadding = this.radius+5;
       const sourceX = d.source.x + (sourcePadding * normX);
       const sourceY = d.source.y + (sourcePadding * normY);
       const targetX = d.target.x - (targetPadding * normX);
       const targetY = d.target.y - (targetPadding * normY);
 
-      return `M${sourceX},${sourceY}L${targetX},${targetY}`;
+      // return `M${sourceX},${sourceY}L${targetX},${targetY}`;
+      var x1 = d.source.x,
+      y1 = d.source.y,
+      x2 = d.target.x,
+      y2 = d.target.y+this.radius,
+      dx = x2 - x1,
+      dy = y2 - y1,
+      dr = Math.sqrt(dx * dx + dy * dy),
+
+      // Defaults for normal edge.
+      drx = dr,
+      dry = dr,
+      xRotation = 0, // degrees
+      largeArc = 0, // 1 or 0
+      sweep = 1; // 1 or 0
+
+    // Self edge.
+    if (d.source == d.target) {
+      // Fiddle with this angle to get loop oriented.
+      xRotation = 45;
+
+      // Needs to be 1.
+      largeArc = 1;
+
+      // Change sweep to change orientation of loop. 
+      //sweep = 0;
+
+      // Make drx and dry different to get an ellipse
+      // instead of a circle.
+      drx = 50;
+      dry = 50;
+
+      // For whatever reason the arc collapses to a point if the beginning
+      // and ending points of the arc are the same, so kludge it.
+      x2 = x2 + 1;
+      y2 = y2 + 1;
+      return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
+  
+      
+    }
+    else return `M${sourceX},${sourceY}L${targetX},${targetY}`;
+
+    
     });
-    this.path.attr("marker-end", "#end-arrow");
     this.labels
-          .attr("x", (d) => ((d.source.x + d.target.x)/2))
-            .attr("y",  (d) => ((d.source. y+ d.target.y)/2));
-          
-    // this.labels.attr("x", function(d) {
-    //   console.log("in tick d",d);
-    //   console.log("in tick d.source.x",d.source.x)
-    //   const sourceDx = Math.max(this.radius, Math.min(this.width - this.radius, d.source.x));
-
-    //   const targetDx = Math.max(this.radius, Math.min(this.width - this.radius, d.target.x));
-    //   return ((sourceDx + targetDx) / 2);
-    //   // return ((d.source.x + d.target.x) / 2);
-    // })
-    // .attr("y", function(d) {
-    //   console.log("in tick d",d)
-    //   const sourceDy = Math.max(this.radius, Math.min(this.height - this.radius, d.source.y));
-    //   const targetDy = Math.max(this.radius, Math.min(this.height - this.radius, d.target.y));
-    //   return ((sourceDy + targetDy) / 2);
-    //   // return ((d.source.y + d.target.y) / 2);
-    // });
-
+    .attr("x", function (d) {
+      if (d.target.id == d.source.id) { return (d.source.x + 25); }
+    else if (d.target.x > d.source.x) { return (d.source.x + (d.target.x - d.source.x) / 2); }
+    else { return (d.target.x + (d.source.x - d.target.x) / 2);} 
+    })
+    .attr("y", function (d) {
+        if (d.target.id == d.source.id) { return (d.source.y+35); }
+        else if (d.target.y > d.source.y) { return (d.source.y + (d.target.y - d.source.y) / 2); }
+        else { return (d.target.y + (d.source.y - d.target.y) / 2); }
+        
+    })
    
   }
   }
