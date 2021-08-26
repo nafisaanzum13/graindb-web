@@ -239,7 +239,7 @@ import * as d3 from 'd3';
           .style('stroke', (d) => d3.rgb(d.type.color).darker().toString())
           .classed('reflexive', (d) => d.reflexive)
           .call(this.drag)
-          .on('contextmenu', this.rightClick)
+          .on('contextmenu', (event, d) => { this.rightClick(d, event) })
          
           .on('mouseover', (event, d) => {
             if (!this.mousedownNode || d === this.mousedownNode) return;
@@ -379,6 +379,48 @@ import * as d3 from 'd3';
         for (const l of toSplice) {
           this.links.splice(this.links.indexOf(l), 1);
         }
+      }
+
+      rightClick(node, event) {
+        // d3.event.preventDefault();
+        this.svg.selectAll('.context-menu').data([1])
+          .enter()
+          .append('div')
+          .attr('class', 'context-menu');
+        // close menu
+        this.svg.on('click.context-menu', function() {
+          d3.select('.context-menu').style('display', 'none');
+          // contextMenuOn = false;
+        });
+        // this gets executed when a contextmenu event occurs
+        this.svg.selectAll('.context-menu')
+          .html('')
+          .append('ul')
+          .selectAll('li')
+          .data(['option1', 'option2']).enter()
+          .append('li')
+
+
+          .on('click', function(d, i) {
+            console.log("i", i);
+            // contextMenuOn = false;
+            d3.select('.context-menu').style('display', 'none');
+            console.log("In context menu",d);
+            
+          })
+
+
+          .text(function(d) {
+            return d;
+          });
+        d3.select('.context-menu').style('display', 'none');
+        // show the context menu
+        d3.select('.context-menu')
+          .style('left', (20 + 2) + 'px')
+          .style('top', (20 - 2) + 'px')
+          .style('display', 'block');
+        event.preventDefault();
+        console.log("contextMenu", node);
       }
   
 
