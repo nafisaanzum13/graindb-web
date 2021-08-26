@@ -3,10 +3,10 @@ import React, { Component } from "react";
 import LeftPanel from "./LeftPanel";
 import MappingPanel from "./MappingPanel";
 import GrqlMain from "./query-duckdb/GrqlMain";
-import axios from "axios";
 
 
 import { Tabs, Tab } from "react-bootstrap";
+import { timeThursdays } from "d3";
 class Dashboard extends Component {
 
   constructor(props) {
@@ -19,7 +19,8 @@ class Dashboard extends Component {
       graph: {
         nodes:[],
         links:[]
-      }
+      },
+      isHomePage: true
     };
   }
   baseURL = "http://localhost:8080/http://localhost:1294/"
@@ -64,6 +65,13 @@ class Dashboard extends Component {
       
   }
 
+  handleHomePageSet = () => {
+    this.setState({
+      isHomePage: false
+    });
+
+  }
+
   getTableInfo = (index, tableName) => {
     let queryURL = this.baseURL + "query?q=PRAGMA table_info('"+tableName+"');"
     fetch(queryURL)
@@ -99,6 +107,7 @@ class Dashboard extends Component {
   state = { count: 0 };
   render() {
     return (
+      <>
       <div className="row">
         <div className="col-md-3 left-panel " >
           <LeftPanel tables={this.state.tables} graph={this.state.graph}/>
@@ -120,10 +129,8 @@ class Dashboard extends Component {
             </Tabs>
        
         </div>
-        {/* <div className="col-md-2 right-panel">
-          <RightPanel {...this.props}  />
-        </div> */}
       </div>
+      </>
     );
   }
   handleClick = () => {
