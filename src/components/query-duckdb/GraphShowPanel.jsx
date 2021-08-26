@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ReactDOM from 'react-dom'
 import * as d3 from 'd3';
+import { createContextMenu } from "./context-menu/ContextMenuFactory";
 
   class GraphShowPanel extends Component {
     
@@ -71,10 +72,32 @@ import * as d3 from 'd3';
       this.restart();
     }
 
+    menuItems = [
+      {
+          id:1,
+        title: 'Explore Node',
+        action: (d) => {
+          // TODO: add any action you want to 
+          console.log("First-menu-item")
+          console.log(d);
+        }
+      },
+      {
+          id:2,
+        title: 'Show Node Properties',
+        action: (d) => {
+          // TODO: add any action you want to perform
+          console.log("second-menu-item")
+          console.log(d);
+        }
+      }
+    ];
+
     initialize() {
         
         this.svg = d3.select(this.svgRef.current)
           .append("svg")
+          .attr("id", "graphSvg")
           .attr("width", this.width)
           .attr("height", this.height)
     
@@ -239,7 +262,10 @@ import * as d3 from 'd3';
           .style('stroke', (d) => d3.rgb(d.type.color).darker().toString())
           .classed('reflexive', (d) => d.reflexive)
           .call(this.drag)
-          .on('contextmenu', (event, d) => { this.rightClick(d, event) })
+          .on('contextmenu', (event, d) => {
+            createContextMenu(d, this.menuItems, this.width, this.height, '#graphSvg', event);
+          })
+          // .on('contextmenu', (event, d) => { this.rightClick(d, event) })
          
           .on('mouseover', (event, d) => {
             if (!this.mousedownNode || d === this.mousedownNode) return;
@@ -381,47 +407,47 @@ import * as d3 from 'd3';
         }
       }
 
-      rightClick(node, event) {
-        // d3.event.preventDefault();
-        this.svg.selectAll('.context-menu').data([1])
-          .enter()
-          .append('div')
-          .attr('class', 'context-menu');
-        // close menu
-        this.svg.on('click.context-menu', function() {
-          d3.select('.context-menu').style('display', 'none');
-          // contextMenuOn = false;
-        });
-        // this gets executed when a contextmenu event occurs
-        this.svg.selectAll('.context-menu')
-          .html('')
-          .append('ul')
-          .selectAll('li')
-          .data(['option1', 'option2']).enter()
-          .append('li')
+      // rightClick(node, event) {
+      //   // d3.event.preventDefault();
+      //   d3.selectAll('.context-menu').data([1])
+      //     .enter()
+      //     .append('div')
+      //     .attr('class', 'context-menu');
+      //   // close menu
+      //   d3.on('click.context-menu', function() {
+      //     d3.select('.context-menu').style('display', 'none');
+      //     // contextMenuOn = false;
+      //   });
+      //   // this gets executed when a contextmenu event occurs
+      //   this.svg.selectAll('.context-menu')
+      //     .html('')
+      //     .append('ul')
+      //     .selectAll('li')
+      //     .data(['option1', 'option2']).enter()
+      //     .append('li')
 
 
-          .on('click', function(d, i) {
-            console.log("i", i);
-            // contextMenuOn = false;
-            d3.select('.context-menu').style('display', 'none');
-            console.log("In context menu",d);
+      //     .on('click', function(d, i) {
+      //       console.log("i", i);
+      //       // contextMenuOn = false;
+      //       d3.select('.context-menu').style('display', 'none');
+      //       console.log("In context menu",d);
             
-          })
+      //     })
 
 
-          .text(function(d) {
-            return d;
-          });
-        d3.select('.context-menu').style('display', 'none');
-        // show the context menu
-        d3.select('.context-menu')
-          .style('left', (20 + 2) + 'px')
-          .style('top', (20 - 2) + 'px')
-          .style('display', 'block');
-        event.preventDefault();
-        console.log("contextMenu", node);
-      }
+      //     .text(function(d) {
+      //       return d;
+      //     });
+      //   d3.select('.context-menu').style('display', 'none');
+      //   // show the context menu
+      //   d3.select('.context-menu')
+      //     .style('left', (20 + 2) + 'px')
+      //     .style('top', (20 - 2) + 'px')
+      //     .style('display', 'block');
+      //   event.preventDefault();
+      //   console.log("contextMenu", node);
+      // }
   
 
   tick() {

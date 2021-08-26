@@ -1,8 +1,22 @@
 text {
-  font: 15px sans-serif;
+  font: 15px;
   pointer-events: none;
 }
 
 marker#end-arrow {
   fill: green;
+}
+
+.contextMenu {
+  stroke: #00557d;
+  fill: #ffffff;
+}
+
+.menuEntry {
+  cursor: pointer;
+}
+
+.menuEntry text {
+  font-size: 12px;
+  stroke: #00557d;
 }
