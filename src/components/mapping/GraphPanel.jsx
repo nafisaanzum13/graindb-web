@@ -41,8 +41,38 @@ import * as d3 from 'd3';
       this.svgRef = React.createRef();
       
     }
-
     componentDidMount() {
+      
+      this.nodes = [];
+      this.links = [];
+      this.initialize();
+      this.initializeData()
+      this.restart();
+    }
+
+    initializeData() {
+      let idHash = [];
+      let nodes = this.props.nodes;
+      let links = this.props.links;
+      this.nodes = [];
+      this.links = [];
+      nodes.forEach(node => {
+        this.nodes.push(node);
+        idHash[this.nodes[this.nodes.length-1].id]=this.nodes[this.nodes.length-1];
+      });
+
+      links.forEach(link => {
+        this.links.push({id: link.id, name: link.name, source:idHash[link.source.id], target:idHash[link.target.id], left: false, right: true});
+      });
+    }
+
+    emptyData() {
+      this.nodes = [];
+      this.links = [];
+      this.restart();
+    }
+
+    initialize() {
         
         this.svg = d3.select(this.svgRef.current)
           .append("svg")
@@ -53,8 +83,6 @@ import * as d3 from 'd3';
         // set up initial nodes and links
         //  - nodes are known by 'id', not by index in array.
         //  - reflexive edges are indicated on the node (as a bold black circle).
-        this.nodes = this.props.nodes;
-        this.links = this.props.links;
         this.lastNodeId = 2;
 
         // init D3 force layout
@@ -88,7 +116,7 @@ import * as d3 from 'd3';
           .enter().append("svg:marker") 
           .attr('id', 'start-arrow')
           .attr('viewBox', '0 -5 10 10')
-          .attr('refX', 0)
+          .attr('refX', 10)
           .attr('markerWidth', 10)
           .attr('markerHeight', 10)
           .attr('orient', 'auto')
@@ -101,7 +129,7 @@ import * as d3 from 'd3';
           .enter().append("svg:marker") 
           .attr("id", "end-arrow")
           .attr("viewBox", "0 -5 10 10")
-          .attr("refX", 0)
+          .attr("refX", 10)
           .attr("markerWidth", 10)
           .attr("markerHeight", 10)
           .attr("orient", "auto")
@@ -118,10 +146,10 @@ import * as d3 from 'd3';
         this.path = this.svg.append('svg:g').selectAll('path')
         .data(this.links)
         .enter()
-        .append("line")
-        .attr("stroke", "#aaa")
-        .attr("stroke-width", "1px")
-        .attr("marker-end","url(#end-arrow)");
+        .append("path")
+        .attr("stroke", "black")
+        .attr("marker-end", "#end-arrow")
+        .attr("stroke-width", "2px");;
 
         this.circle = this.svg.append('svg:g').selectAll('g');
 
@@ -150,25 +178,16 @@ import * as d3 from 'd3';
     
       componentDidUpdate(prevProps, prevState) {
         if (prevProps.nodes !== this.props.nodes || prevProps.links !== this.props.links) {
-            this.nodes = this.props.nodes;
-            this.links = this.props.links;
-            this.restart()
+          this.emptyData();
+          this.initializeData();
+          this.restart()
         }
         this.restart();
       }
 
       restart = () => {
         // path (link) group
-        this.svg.append("svg:defs").append("svg:marker")
-          .attr("id", "end-arrow")
-          .attr("viewBox", "0 -5 10 10")
-          .attr("refX", 10)
-          .attr("markerWidth", 10)
-          .attr("markerHeight", 10)
-          .attr("orient", "auto")
-        .append("svg:path")
-          .attr("d", "M0,-5L10,0L0,5")
-          .attr("fill", "#000");
+      
 
         this.path = this.path.data(this.links);
         // update existing links
@@ -198,12 +217,21 @@ import * as d3 from 'd3';
           this.labels = this.labels.data(this.links);
           this.labels.exit().remove();
 
-          this.labels = this.labels.enter().append('svg:text')
-          .attr("x", (d) => ((d.source.x + d.target.x)/2))
-            .attr("y",  (d) => ((d.source. y+ d.target.y)/2))
-          .text("label").merge(this.path)
-
-          this.path = this.path.merge(this.path);
+          this.labels = this.labels.enter().append('svg:text').attr('class', 'linklabels')
+          .attr("font-family", "Arial, Helvetica, sans-serif")
+          .attr("x", function (d) {
+            if (d.target.id == d.source.id) { return (d.source.x+2); }
+          else if (d.target.x > d.source.x) { return (d.source.x + (d.target.x - d.source.x) / 2); }
+          else { return (d.target.x + (d.source.x - d.target.x) / 2);} 
+          })
+          .attr("y", function (d) {
+            console.log("in tick y", d);
+              if (d.target.id == d.source.id) { return (d.source.y + d.source.y); }
+              else if (d.target.y > d.source.y) { return (d.source.y + (d.target.y - d.source.y) / 2); }
+              else { return (d.target.y + (d.source.y - d.target.y) / 2); }
+              
+          })
+          .text(function (d) { return d.name}).merge(this.labels)
           
     
         // circle (node) group
@@ -221,48 +249,6 @@ import * as d3 from 'd3';
     
         // add new nodes
         const g = this.circle.enter().append('svg:g');
-
-        // this.linkLabels = this.svg.selectAll(".link-label")
-        // .data(this.links)
-        // .text(function(d) {
-        //   console.log("d",d);
-        //   return d.name;
-        // });
-
-        // this.linkLabels.exit().remove();
-
-        // this.linkLabels
-        // .enter().append('svg:text')
-        // .data(this.links)
-        // .attr('class', 'link-label')
-        // .attr('text-anchor', 'middle')
-        // .text(function(d) {
-        //   console.log("d2",d);
-        //   return d.name;
-        // }).merge(this.linkLabels);
-
-        // this.labels = this.labels.data(this.links);
-
-        // this.labels.exit().remove();
-        
-        // this.labels.enter()
-        //     .append("text")
-        //     .data(this.links)
-        //     .attr("text-anchor", "middle")
-        //   .attr("fill", "Black")
-        //   .style("font", "normal 12px")
-        //   .attr("dy", ".35em")
-        // //   .attr("x", function(d) {
-        // //     return ((d.source.x + d.target.x)/2);
-        // // })
-        // // .attr("y", function(d) {
-        // //     return ((d.source.y + d.target.y)/2);
-        // // })
-        //   .text(function(d) { return d.name; })
-            // .append("textPath")
-            // .attr("startOffset", "50%")
-            // .attr("xlink:href", function(d,i){ return "#id" + i})
-            // .text("label");
     
         g.append('svg:circle')
           .attr('class', 'node')
@@ -270,6 +256,8 @@ import * as d3 from 'd3';
           .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(d.color).brighter().toString() : d.color)
           .style('stroke', (d) => d3.rgb(d.color).darker().toString())
           .classed('reflexive', (d) => d.reflexive)
+          .on('contextmenu', this.rightClick)
+         
           .on('mouseover', (event, d) => {
             if (!this.mousedownNode || d === this.mousedownNode) return;
             // enlarge target node
@@ -482,28 +470,27 @@ import * as d3 from 'd3';
   
 
   tick() {
-    this.nodes = this.props.nodes;
-    this.links = this.props.links;
+    this.initializeData();
     // console.log("Graph edges ", this.links);
     this.circle.attr('transform', (d) => `translate(${d.x},${d.y})`);
     // draw directed edges with proper padding from node centers
     this.path.attr('d', (d) => {
-      // const deltaX = d.target.x - d.source.x;
-      // const deltaY = d.target.y - d.source.y;
-      // const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-      // const normX = deltaX / dist;
-      // const normY = deltaY / dist;
-      // const sourcePadding = d.left ? 17 : 12;
-      // const targetPadding = d.right ? 17 : 12;
-      // const sourceX = d.source.x + (sourcePadding * normX);
-      // const sourceY = d.source.y + (sourcePadding * normY);
-      // const targetX = d.target.x - (targetPadding * normX);
-      // const targetY = d.target.y - (targetPadding * normY);
+      const deltaX = d.target.x - d.source.x;
+      const deltaY = d.target.y - d.source.y;
+      const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const normX = deltaX / dist;
+      const normY = deltaY / dist;
+      const sourcePadding = d.left ? 17 : 12;
+      const targetPadding = d.right ? 17 : 12;
+      const sourceX = d.source.x + (sourcePadding * normX);
+      const sourceY = d.source.y + (sourcePadding * normY);
+      const targetX = d.target.x - (targetPadding * normX);
+      const targetY = d.target.y - (targetPadding * normY);
 
       // return `M${sourceX},${sourceY}L${targetX},${targetY}`;
       var x1 = d.source.x,
       y1 = d.source.y,
-      x2 = d.target.x+this.radius,
+      x2 = d.target.x,
       y2 = d.target.y+this.radius,
       dx = x2 - x1,
       dy = y2 - y1,
@@ -536,37 +523,26 @@ import * as d3 from 'd3';
       // and ending points of the arc are the same, so kludge it.
       x2 = x2 + 1;
       y2 = y2 + 1;
+      return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
+  
       
     }
+    else return `M${sourceX},${sourceY}L${targetX},${targetY}`;
 
-    return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
-  
+    
     });
     this.labels
-          .attr("x", (d) => ((d.source.x + d.target.x)/2))
-            .attr("y",  (d) => ((d.source. y+ d.target.y)/2));
-          
-
-    // this.labels.attr("x", function(d) {
-    //     return ((d.source.x + d.target.x)/2);
-    // })
-    // .attr("y", function(d) {
-    //     return ((d.source.y + d.target.y)/2);
-    // });
-    // this.linkLabels.attr("x", function(d) {
-    //   const sourceDx = Math.max(this.radius, Math.min(this.width - this.radius, d.source.x));
-
-    //   const targetDx = Math.max(this.radius, Math.min(this.width - this.radius, d.target.x));
-    //   return ((sourceDx + targetDx) / 2);
-    //   // return ((d.source.x + d.target.x) / 2);
-    // })
-    // .attr("y", function(d) {
-    //   const sourceDy = Math.max(this.radius, Math.min(this.height - this.radius, d.source.y));
-    //   const targetDy = Math.max(this.radius, Math.min(this.height - this.radius, d.target.y));
-    //   return ((sourceDy + targetDy) / 2);
-    //   // return ((d.source.y + d.target.y) / 2);
-    // });
-
+    .attr("x", function (d) {
+      if (d.target.id == d.source.id) { return (d.source.x + 25); }
+    else if (d.target.x > d.source.x) { return (d.source.x + (d.target.x - d.source.x) / 2); }
+    else { return (d.target.x + (d.source.x - d.target.x) / 2);} 
+    })
+    .attr("y", function (d) {
+        if (d.target.id == d.source.id) { return (d.source.y+35); }
+        else if (d.target.y > d.source.y) { return (d.source.y + (d.target.y - d.source.y) / 2); }
+        else { return (d.target.y + (d.source.y - d.target.y) / 2); }
+        
+    })
    
   }
   }

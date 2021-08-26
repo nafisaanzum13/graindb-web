@@ -38,6 +38,18 @@ class DrawingPanel extends Component {
       });
   };
 
+  componentDidMount() {
+    if (localStorage.getItem('graph')) {
+      console.log("localStorage.getItem('graph')",localStorage.getItem('graph'));
+      let graph = JSON.parse(localStorage.getItem('graph'));
+      this.setState({
+        nodes: graph.nodes,
+        links: graph.links
+      })
+    }
+    
+  }
+
   render() {
     return (
       <>
