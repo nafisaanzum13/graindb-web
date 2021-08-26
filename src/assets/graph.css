@@ -1,0 +1,8 @@
+text {
+  font: 15px sans-serif;
+  pointer-events: none;
+}
+
+marker#end-arrow {
+  fill: green;
+}
