@@ -22,7 +22,7 @@ class QueryResultContainer extends Component {
   }
 
   nodePkHash = {}
-
+  edgeType = "";
   resetVars () {
     this.nodePkHash = {}
     this.state = {
@@ -31,6 +31,7 @@ class QueryResultContainer extends Component {
       dataArray: [],
       tableAttributes: []
     };
+    this.edgeType = "";
   }
 
   prepareNodePkHash () {
@@ -91,7 +92,11 @@ class QueryResultContainer extends Component {
     var m;
     while(m= regex.exec(this.props.query.toLowerCase())) {
       let edgeAndVarSplit = m[1].split(":")
-      if(edgeAndVarSplit.length>1)edgeAndVar[edgeAndVarSplit[0].trim()] = edgeAndVarSplit[1].trim();
+      if(edgeAndVarSplit.length>1) {
+
+        edgeAndVar[edgeAndVarSplit[0].trim()] = edgeAndVarSplit[1].trim();
+        this.edgeType = edgeAndVarSplit[1].trim();
+      }
     }
     return edgeAndVar;
   }
@@ -211,7 +216,8 @@ class QueryResultContainer extends Component {
           source: nodesForEdges[0].id, 
           target: nodesForEdges[1].id, 
           left : false, 
-          right : true
+          right : true,
+          type: this.edgeType
         };
         links.push(newLink);
       }

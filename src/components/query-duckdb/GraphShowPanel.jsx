@@ -62,7 +62,7 @@ import { createContextMenu } from "./context-menu/ContextMenuFactory";
       });
 
       links.forEach(link => {
-        this.links.push({id: link.id, source:idHash[link.source], target:idHash[link.target], left: false, right: true});
+        this.links.push({id: link.id, source:idHash[link.source], target:idHash[link.target], left: link.left, right: link.right, type: link.type});
       });
     }
 
@@ -236,7 +236,7 @@ import { createContextMenu } from "./context-menu/ContextMenuFactory";
               else { return (d.target.y + (d.source.y - d.target.y) / 2); }
               
           })
-          .text(function (d) { return d.id}).merge(this.labels)
+          .text(function (d) { return d.type}).merge(this.labels)
           
     
         // circle (node) group
