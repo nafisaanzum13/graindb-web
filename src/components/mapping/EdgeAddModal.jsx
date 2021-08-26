@@ -87,65 +87,64 @@ class EdgeAddModal extends Component {
             </Modal.Header>
             <Modal.Body>
                 <div className="row">
-                    <div className="col-md-10 offset-md-1">
-                    <label>
-                    Edge Type:
-                    <input type="text" name="name" 
+                    <div className="col-md-8 offset-md-2">
+                    <div className="logo-color">
+                    Edge Type:</div>
+                    <input type="text" name="name" class="form-control"
                     value={this.state.value} onChange={this.handleChangeONName}
-                    placeholder="Enter type of the edge"/>
-                </label>
+                    placeholder="Enter a type for the edge"/>
+               
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-md-10 offset-md-1">
-                        <label>
-                        Edge Table:
-                        <select 
+                <div className="row" style={{marginTop:0.5+'em'}}>
+                    <div className="col-md-8 offset-md-2">
+                    <div className="logo-color">
+                        Edge Table</div>
+                        <select class="form-select"
                             value={this.state.edgeTable} 
                             onChange={this.handleEdgeTableChange} >
-                                <option value="-1">Edge Table</option>
+                                <option value="-1">Select a Table to join node keys columns</option>
                                 {tablesSelect}
                         </select>
-                        </label>
+                      
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-md-10 offset-md-1">
-                        <label>
-                        Join {this.props.fromNode.name} on:
-                        <select 
+                <div className="row" style={{marginTop:0.5+'em'}}>
+                    <div className="col-md-8 offset-md-2">
+                        <div className="logo-color">
+                        Join Node {this.props.fromNode.name} on: </div>
+                        <select class="form-select"
                             value={this.state.sourceCol} 
                             onChange={this.handleSourceColChange} >
-                                <option value="-1">Select a column</option>
+                                <option value="-1">Select the join column</option>
                                 {columns}
                         </select>
-                        </label>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-md-10 offset-md-1">
-                        <label>
-                        Join {this.props.toNode.name} on:
-                        <select 
+                <div className="row" style={{marginTop:0.5+'em'}}>
+                    <div className="col-md-8 offset-md-2">
+                    <div className="logo-color">
+                        Join Node {this.props.toNode.name} on:  </div>
+                        <select class="form-select"
                             value={this.state.targetCol} 
                             onChange={this.handleTargetColChange} >
-                                <option value="-1">Select a column</option>
+                                <option value="-1">Select the join column</option>
                                 {columns}
                         </select>
-                        </label>
+                        
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-md-10 offset-md-1">
-                    <label>
-                   Edge Direction:
-                    <select 
+                <div className="row" style={{marginTop:0.5+'em'}}>
+                    <div className="col-md-8 offset-md-2">
+                    <div className="logo-color">
+                   Edge Direction:</div>
+                    <select class="form-select"
                     value={this.state.direction} 
                     onChange={this.handleDirectionChange} >
                         <option value="true">LEFT</option>
                     <option value="false">RIGHT</option>
                 </select>
-                </label>
+               
                 
                     </div>
                 </div>
@@ -156,7 +155,7 @@ class EdgeAddModal extends Component {
             <Button variant="secondary" onClick={this.props.handleClose}>
                 Close
             </Button>
-            <Button variant="primary" onClick={this.handleSubmit}>
+            <Button variant="success" onClick={this.handleSubmit}>
                 Create
             </Button>
             </Modal.Footer>
