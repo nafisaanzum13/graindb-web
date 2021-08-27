@@ -51,7 +51,7 @@ class QueryContainer extends Component {
       <>
         <div className=" query-input-area">
             
-                <textarea class="form-control" id="exampleFormControlTextarea1" rows="2"
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="1"
                     value={this.state.queryString} placeholder="Write Query in GRQL"
                     onChange={(e) => this.setSearchString(e.target.value)}></textarea>
             

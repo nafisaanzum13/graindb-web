@@ -21,7 +21,7 @@ class EdgeDetailsContainer extends Component {
     <div className="col-md-12">
         <div className="list-items row">
             <div className="col-md-10" >
-            {this.props.edge.id + 1} {this.props.edge.name}
+            {this.props.edge.id + 1} {this.props.edge.name} <span style={{color:this.props.edge.source.color}} className="circle-color"/>  <span className="arrow-right"/>  <span style={{color:this.props.edge.target.color}} className="circle-color"/>
             </div>
             <div className="col-md-1 zero-padding">
               <button className="btn zero-padding" type="button" onClick={this.handleClick} >

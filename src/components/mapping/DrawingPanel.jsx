@@ -24,7 +24,8 @@ class DrawingPanel extends Component {
   }
   baseURL = "http://localhost:8080/http://localhost:1294/";
 
-  colors = ['#E03E1A', '#4566F7', '#72DB42', '#6EB1E0', '#16F2B0'];
+  colors = ['#f1b6da','#b8e186', '#c2a5cf', '#E03E1A', '#4566F7', '#72DB42', '#6EB1E0', '#16F2B0'];
+  colorsForLink = ['#f4a582', '#92c5de']
   handleClose = () => {
     this.setState({
       showNodeModal: false

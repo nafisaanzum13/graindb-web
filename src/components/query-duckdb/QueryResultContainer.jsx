@@ -322,7 +322,7 @@ class QueryResultContainer extends Component {
     return query;
   }
 
-  appendNewNodesFromExploration(data, columns, nodeType, node, isRight) {
+  appendNewNodesFromExploration(data, columns, nodeType, node, isRight, edgeType) {
     let nodes = this.state.nodes;
     let links = this.state.links;
     if(data.length==0) return;
@@ -342,7 +342,7 @@ class QueryResultContainer extends Component {
         target: newNode.id, 
         left : !isRight, 
         right : isRight,
-        type: this.edgeType
+        type: edgeType
       }
       if(!isRight) {
         newLink.source = newNode.id;
@@ -364,7 +364,7 @@ class QueryResultContainer extends Component {
   }
   baseURL = "http://localhost:8080/http://localhost:1294/";
 
-  queryToNeighbors = (query, node, nodeType, indexNext, isRight) => {
+  queryToNeighbors = (query, node, nodeType, indexNext, isRight, edgeType) => {
         let queryURL = this.baseURL+"query?q="+query;
         console.log("queryURL",queryURL);
         fetch(queryURL, {})
@@ -374,7 +374,7 @@ class QueryResultContainer extends Component {
             console.log("result", result);
             if(result.success == true) {
               
-              this.appendNewNodesFromExploration(result.data, result.names, nodeType, node, isRight);
+              this.appendNewNodesFromExploration(result.data, result.names, nodeType, node, isRight, edgeType);
               this.expandToNodeToLink(node, indexNext);
             } else {
               console.log("error", result.error);
@@ -408,7 +408,7 @@ class QueryResultContainer extends Component {
         let query = this.getQueryStringForNeighborhoodExpand(isRight, link.name, node.type.name, nodeType.name, node.pk, node.type.table.columns[0]);
        
         index ++;
-        this.queryToNeighbors(query, node, nodeType, index, isRight);
+        this.queryToNeighbors(query, node, nodeType, index, isRight, link.name);
       } 
     }
   }

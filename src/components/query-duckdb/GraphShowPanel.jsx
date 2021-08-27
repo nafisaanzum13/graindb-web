@@ -7,8 +7,8 @@ import { createContextMenu } from "./context-menu/ContextMenuFactory";
     
   svgRef= React.RefObject;
   dataset = [];
-  width = 700;
-  height = 500;
+  width = 900;
+  height = 550;
   radius = 20
   svg;
 
@@ -107,7 +107,7 @@ import { createContextMenu } from "./context-menu/ContextMenuFactory";
         // init D3 force layout
         this.force = d3.forceSimulation()
           .force('link', d3.forceLink().id((d) => d.id).distance(150))
-          .force('charge', d3.forceManyBody().strength(-500))
+          .force('charge', d3.forceManyBody().strength(-250))
           .force('x', d3.forceX(this.width / 2))
           .force('y', d3.forceY(this.height / 2))
           .on('tick', () => this.tick());
@@ -185,9 +185,9 @@ import { createContextMenu } from "./context-menu/ContextMenuFactory";
 
     
       componentDidUpdate(prevProps, prevState) {
-        console.log("component did update", prevProps.nodes);
-        console.log("component did update", this.props.nodes);
-        if (prevProps.nodes !== this.props.nodes || prevProps.links !== this.props.links) {
+        // console.log("component did update", prevProps.nodes);
+        // console.log("component did update", this.props.nodes);
+        if ((prevProps.nodes != this.props.nodes) || (prevProps.links != this.props.links)) {
           console.log("component did update to update", this.props.nodes);
           this.emptyData();
           this.initializeData();

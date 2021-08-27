@@ -48,7 +48,7 @@ class GrqlMain extends Component {
     const queryList = this.state.pastQueries.map((singleQuery) => <PastQueryContainer query={singleQuery} />);
     return (
       <>
-        <h5 className="logo-color">Query GrainDB on your mapped graph as well as stored tables!</h5>
+        {/* <h5 className="logo-color">Query GrainDB on your mapped graph as well as stored tables!</h5> */}
         <div className="row">
             <div className="col-md-8">
              <QueryContainer querySubmit = {this.querySubmit}/>
