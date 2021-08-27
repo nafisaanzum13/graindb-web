@@ -38,7 +38,7 @@ class NodeDetailsContainer extends Component {
                 Node Type: {this.props.node.name}<br/>
                 Table: {this.props.node.table.name}<br/>
                 Node label attribute: {this.props.node.label}<br/>
-                <span style={{color:this.props.node.color}}>Color Selected: {this.props.node.color}</span>
+                {/* <span style={{color:this.props.node.color}}>Color Selected: {this.props.node.color}</span> */}
               </div>
               <hr></hr>
         </div>

@@ -29,7 +29,7 @@ class LeftPanel extends Component {
       </div>
       <div style={{height: 0.5+"vh", background:"white"}}></div>
       <div  className="theme-green-background-light">
-            <h5 className = "table-space-headers">Mapped Graph</h5>
+            <h5 className = "table-space-headers">Graph</h5>
             <div style={{height: 40+"vh", overflowY:"auto", overflowX:"hidden"}}>
 
                 <div className = "table-space">

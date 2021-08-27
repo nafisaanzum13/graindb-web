@@ -94,9 +94,10 @@ class QueryResultContainer extends Component {
     while(m= regex.exec(this.props.query.toLowerCase())) {
       let edgeAndVarSplit = m[1].split(":")
       if(edgeAndVarSplit.length>1) {
+        this.edgeType = edgeAndVarSplit[1].trim().split("*")[0];
+        edgeAndVar[edgeAndVarSplit[0].trim()] = this.edgeType ;
 
-        edgeAndVar[edgeAndVarSplit[0].trim()] = edgeAndVarSplit[1].trim();
-        this.edgeType = edgeAndVarSplit[1].trim();
+       
       }
     }
     return edgeAndVar;
@@ -311,7 +312,7 @@ class QueryResultContainer extends Component {
     graphDiv=<GraphShowPanel nodes={this.state.nodes} links={this.state.links} />
     let queryDiv = null;
     if(this.props.query && this.props.query.length>0) {
-      queryDiv = <div><p className="logo-color">QUERY: {this.props.query}</p>  <p>{this.state.tableData.length} rows returned.</p></div> ;
+      queryDiv = <div><span className="logo-color">QUERY: {this.props.query}</span>  <span>({this.state.tableData.length} rows returned.)</span></div> ;
 
     }
     return (
@@ -352,7 +353,6 @@ class QueryResultContainer extends Component {
                 </Tab>
 
               <Tab eventKey={1}  title="Graph">
-              Graph output here 
                {graphDiv}
                 
               </Tab>
