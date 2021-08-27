@@ -77,9 +77,7 @@ import { createContextMenu } from "./context-menu/ContextMenuFactory";
           id:1,
         title: 'Explore Node',
         action: (d) => {
-          // TODO: add any action you want to 
-          console.log("First-menu-item")
-          console.log(d);
+          this.props.expandNeighbor(d);
         }
       },
       {
@@ -187,7 +185,10 @@ import { createContextMenu } from "./context-menu/ContextMenuFactory";
 
     
       componentDidUpdate(prevProps, prevState) {
+        console.log("component did update", prevProps.nodes);
+        console.log("component did update", this.props.nodes);
         if (prevProps.nodes !== this.props.nodes || prevProps.links !== this.props.links) {
+          console.log("component did update to update", this.props.nodes);
           this.emptyData();
           this.initializeData();
           this.restart()

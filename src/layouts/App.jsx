@@ -9,7 +9,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isHomePage :  false
+      isHomePage :  true
     };
     this.handleHomePageSet = this.handleHomePageSet.bind(this);
   }

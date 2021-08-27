@@ -190,11 +190,11 @@ class QueryResultContainer extends Component {
           } else if(type.type == 'node') {
             let propertyObject = {};
             let nodeType = type.object;
-            console.log("nodeType",nodeType);
-            console.log("this.props.columns",this.props.columns);
-            console.log("this.props.data[start]",this.props.data[start]);
-            console.log("start",start);
-            console.log("i",i);
+            // console.log("nodeType",nodeType);
+            // console.log("this.props.columns",this.props.columns);
+            // console.log("this.props.data[start]",this.props.data[start]);
+            // console.log("start",start);
+            // console.log("i",i);
             for(let k=0; k<nodeType.table.columns.length; k++) {
               propertyObject[this.props.columns[start+k]] = this.props.data[start+k][i];
             }
@@ -306,10 +306,122 @@ class QueryResultContainer extends Component {
    
   }
 
+  isNodeTypeInLink(node, link) {
+    if(link.source.id == node.id) return true;
+    else if (link.target.id == node.id) return true;
+    else return false;
+  }
+
+
+  getQueryStringForNeighborhoodExpand = (isRight, linkName, thisNodeName, otherNodeName, pk, pkColumnName) => {
+    let query = "SELECT b from (a:"+thisNodeName+") ";
+    if(isRight) query += " - [e:"+linkName+"] -> (b:"+otherNodeName+") ";
+    else query += "<- [e:"+linkName+"] - (b:"+otherNodeName+") "
+    query += " WHERE a."+pkColumnName+" %3D "+pk;
+    console.log("query:", query);
+    return query;
+  }
+
+  appendNewNodesFromExploration(data, columns, nodeType, node, isRight) {
+    let nodes = this.state.nodes;
+    let links = this.state.links;
+    if(data.length==0) return;
+    for(let i=0; i<data[0].length; i++) {
+      let propertyObject = {};
+      for(let j=0; j<columns.length; j++) {
+        propertyObject[columns[j]] = data[j][i]
+      }
+      let id = this.state.nodes.length;
+      let newNode = this.createNodeObject(id, nodeType, propertyObject, data[0][i], nodes);
+      if(newNode.id == id) {
+        nodes.push(newNode);
+      }
+      let newLink ={ 
+        id: links.length, 
+        source: node.id, 
+        target: newNode.id, 
+        left : !isRight, 
+        right : isRight,
+        type: this.edgeType
+      }
+      if(!isRight) {
+        newLink.source = newNode.id;
+        newLink.target = node.id
+      }
+      links.push(newLink);
+
+    }
+    console.log("after adding nodes", nodes);
+    console.log("after adding links", links);
+    this.setState({
+      nodes: [],
+      links: []
+    });
+    this.setState({
+      nodes: nodes,
+      links: links
+    });
+  }
+  baseURL = "http://localhost:8080/http://localhost:1294/";
+
+  queryToNeighbors = (query, node, nodeType, indexNext, isRight) => {
+        let queryURL = this.baseURL+"query?q="+query;
+        console.log("queryURL",queryURL);
+        fetch(queryURL, {})
+        .then(res  => res.json())
+        .then(
+          (result) => {
+            console.log("result", result);
+            if(result.success == true) {
+              
+              this.appendNewNodesFromExploration(result.data, result.names, nodeType, node, isRight);
+              this.expandToNodeToLink(node, indexNext);
+            } else {
+              console.log("error", result.error);
+              alert('Error ' + result.error);
+            }
+          },
+          (error) => {
+            console.log("error", error);
+            alert('Error ' + error);
+          }
+        ) 
+  }
+
+  expandToNodeToLink(node, index) {
+    if(index>= this.props.graph.links.length) {
+      console.log("this.state.nodes", this.state.nodes);
+      return;
+    }
+    else {
+      console.log("Explore index", index);
+      console.log("this.state.nodes", this.state.nodes);
+      console.log("this.state.links", this.state.links);
+      let link = this.props.graph.links[index];
+      if(this.isNodeTypeInLink(node.type, link)) {
+        let isRight = true;
+        let nodeType = link.target;
+        if((link.source.id != link.target.id) && (node.type.id ==link.target.id)) {
+          isRight = false;
+          nodeType = link.source;
+        }
+        let query = this.getQueryStringForNeighborhoodExpand(isRight, link.name, node.type.name, nodeType.name, node.pk, node.type.table.columns[0]);
+       
+        index ++;
+        this.queryToNeighbors(query, node, nodeType, index, isRight);
+      } 
+    }
+  }
+
+  expandNeighbor = (node) => {
+    console.log("node", node)
+    this.expandToNodeToLink(node, 0);
+  }
+
   render() {
     let graphDiv =null;
     console.log("nodes", this.state.nodes);
-    graphDiv=<GraphShowPanel nodes={this.state.nodes} links={this.state.links} />
+    graphDiv=<GraphShowPanel nodes={this.state.nodes} links={this.state.links} expandNeighbor={this.expandNeighbor} />
     let queryDiv = null;
     if(this.props.query && this.props.query.length>0) {
       queryDiv = <div><span className="logo-color">QUERY: {this.props.query}</span>  <span>({this.state.tableData.length} rows returned.)</span></div> ;
